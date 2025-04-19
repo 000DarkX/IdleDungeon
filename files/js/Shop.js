@@ -29,6 +29,9 @@ class Shop {
         overlay.className = "overlay";
         overlay.id = "overlay";
 
+        const parent = document.createElement("div");
+        parent.className = "dialog-parent";
+
         // Create the dialog container
         const dialog = document.createElement("div");
         dialog.className = "dialog-container";
@@ -39,8 +42,11 @@ class Shop {
         closeButton.className = "dialog-close";
         closeButton.textContent = "×";
         closeButton.addEventListener("click", () => {
-            dialog.classList.remove("show");
-            overlay.classList.remove("show");
+            parent.remove();
+            overlay.remove();
+            //parent.classList.remove("show");
+            //dialog.classList.remove("show");
+            //overlay.classList.remove("show");
         });
 
         // Create the dialog header
@@ -50,6 +56,7 @@ class Shop {
 
         // Create the table
         const table = document.createElement("table");
+        table.className = "table";
 
         // Create the table header
         const thead = document.createElement("thead");
@@ -131,19 +138,23 @@ class Shop {
         dialog.appendChild(closeButton);
         dialog.appendChild(header);
         dialog.appendChild(table);
+        parent.appendChild(dialog);
 
         // Append dialog and overlay to the container
         container.appendChild(overlay);
-        container.appendChild(dialog);
+        container.appendChild(parent);
 
         // Show dialog and overlay
-        dialog.classList.add("show");
+        parent.classList.add("show");
         overlay.classList.add("show");
 
         // Close dialog when overlay is clicked
         overlay.addEventListener("click", () => {
-            dialog.classList.remove("show");
-            overlay.classList.remove("show");
+            overlay.remove();
+            parent.remove();
+            //parent.classList.remove("show");
+            //dialog.classList.remove("show");
+            //overlay.classList.remove("show");
         });
     }
 

@@ -1,5 +1,5 @@
 /* Dialog styling */
-.dialog-container {
+.dialog-parent {
     display: none;
     position: fixed;
     top: 50%;
@@ -11,6 +11,13 @@
     border-radius: 8px;
     padding: 20px;
     z-index: 1000;
+
+    height: 600px;
+    overflow: auto;
+}
+
+.dialog-container {
+    
 }
 
 .dialog-header {
@@ -33,6 +40,11 @@
 .table {
     width: 100%;
     border-collapse: collapse;
+}
+
+.table tbody {
+    overflow-y: auto;
+    max-height: 600px;
 }
 
 .th, .td {

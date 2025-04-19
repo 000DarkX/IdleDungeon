@@ -6,53 +6,6 @@
  * @param {*} sprites spritesheet
  * @returns 
  */
-/*function createImageDropdown(containerId, imageList, sprites) {
-    const container = containerId instanceof HTMLElement ? containerId : document.getElementById(containerId);
-
-    if (!container || !imageList) {
-        console.error("Container not found or image list is empty");
-        return;
-    }
-
-    // Create the dropdown
-    const dropdown = document.createElement("select");
-    dropdown.id = "imageDropdown";
-    dropdown.innerHTML = `
-        <option value="" selected>Select an image</option>
-        ${ Object.keys(imageList).map(key => `<option value="${imageList[key]}">${key}</option>`).join()}
-    `;
-    //${imageList.map(image => `<option value="${image}">${image.split('/').pop()}</option>`).join('')}
-
-    // Create the image display area
-    const imageDisplay = document.createElement("div");
-    imageDisplay.className = "image-display";
-
-    const imgElement = document.createElement("canvas");
-    imgElement.width = sprites.width;
-    imgElement.height = sprites.height;
-    imgElement.classList.add("img");
-    imgElement.id = "selectedImage";
-    imgElement.style.display = "none";
-    imageDisplay.appendChild(imgElement);
-
-    // Add event listener for dropdown change
-    dropdown.addEventListener("change", () => {
-        const selectedValue = dropdown.value;
-        if (selectedValue != undefined) {
-            sprites.drawByID(imgElement.getContext("2d"), selectedValue, 0, 0, sprites.width, sprites.height);
-            imgElement.style.display = "block";
-        } else {
-            imgElement.style.display = "none";
-        }
-        dropdown.remove();
-    });
-
-    // Append elements to the container
-    container.appendChild(dropdown);
-    container.appendChild(imageDisplay);
-
-    return {dropdown, imageDisplay};
-}*/
 
 function createImageDropdown(containerId, imageList, sprites, hero, type, slot) {
     const container = containerId instanceof HTMLElement ? containerId : document.getElementById(containerId);

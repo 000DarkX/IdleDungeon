@@ -22,8 +22,10 @@ function createDialogWithTable(containerId, dialogTitle, data) {
     closeButton.className = "dialog-close";
     closeButton.textContent = "×";
     closeButton.addEventListener("click", () => {
-        dialog.classList.remove("show");
-        overlay.classList.remove("show");
+        dialog.remove();
+        overlay.remove();
+        //dialog.classList.remove("show");
+        //overlay.classList.remove("show");
     });
 
     // Create the dialog header
@@ -103,8 +105,10 @@ function createDialogWithTable(containerId, dialogTitle, data) {
 
     // Close dialog when overlay is clicked
     overlay.addEventListener("click", () => {
-        dialog.classList.remove("show");
-        overlay.classList.remove("show");
+        dialog.remove();
+        overlay.remove();
+        //dialog.classList.remove("show");
+        //overlay.classList.remove("show");
     });
 }
 

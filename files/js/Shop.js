@@ -8,6 +8,8 @@ class Shop {
         });*/
         this.framTime = undefined;
         this.refreshRate = 3;
+        this.overlay = undefined;
+        this.parent  = undefined;
         this.refresh();
     }
 
@@ -23,6 +25,8 @@ class Shop {
     }
 
     show() {
+        if (this.overlay) this.overlay.remove();
+        if (this.parent) this.parent.remove();
         const container = document.body;
 
         const overlay = document.createElement("div");
@@ -156,6 +160,9 @@ class Shop {
             //dialog.classList.remove("show");
             //overlay.classList.remove("show");
         });
+
+        this.overlay = overlay;
+        this.parent = parent;
     }
 
     refresh() {

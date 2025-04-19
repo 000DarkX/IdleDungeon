@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tile Getter</title>
+</head>
+<body>
+    <style>
+        html {
+            box-sizing: border-box;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        body {
+            margin: 0
+        }
+    </style>
+    <canvas id="canvas"></canvas>
+    <script type="module">
+        // files\js\HeroJS-2025\SpriteSheet.mjs
+        import SpriteSheet from "./js/HeroJS-2025/SpriteSheet-module.js";
+
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        const sprites = new SpriteSheet();
+        await sprites.load("assets/stone-soup.png");
+
+        canvas.width = sprites.image.width;
+        canvas.height= sprites.image.height;
+        
+        var id = 0;
+        addEventListener("mousemove", e=> {
+            id = sprites.IDFromXY(e.pageX, e.pageY);
+            document.title = `${e.pageX}, ${e.pageY} = ${id}`;
+        });
+
+        addEventListener("mouseup", e => {
+            if (parent) {
+                const id = sprites.IDFromXY(e.pageX, e.pageY);
+                parent.postMessage(id, "*");
+            }
+        });
+
+        function draw() {
+            requestAnimationFrame(draw);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            sprites.draw(ctx);    
+            ctx.strokeRect(id % 64 * 32, Math.trunc(id / 64) * 32, 32, 32);
+        }
+        requestAnimationFrame(draw);
+</script>
+</body>
+</html>

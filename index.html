@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Interface</title>
+    <link rel="stylesheet" href="./files/css/dropdown.css">
+    <link rel="stylesheet" href="./files/css/dialog.css">
+    <style>
+        body {
+            user-select: none;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        main {
+            border: 2px solid #000;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+        }
+        .left-panel {
+            width: 300px;
+            height: 400px;
+            border: 2px solid #000;
+            margin-right: 20px;
+            position: relative;
+        }
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .labels div {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .stats {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 40px; /* Increased space between stats and actions */
+}
+
+.row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns */
+    gap: 10px; /* Space between the boxes */
+}
+
+.stats-row div {
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-weight: bold;
+    background-color: #ccc;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px; /* Ensure proper spacing */
+}
+
+.actions div {
+    width: 100px;
+    height: 50px;
+    border: 2px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #ddd;
+    cursor: pointer;
+}
+
+.stats-row div {
+    position: relative;
+}
+    </style>
+</head>
+<body>
+    <main>
+        <div class="container">
+            <div class="left-panel">
+                <canvas id="canvas"></canvas>
+            </div>
+            <div class="right-panel">
+                <div class="labels">
+                    <div id="location">Location: Guild Hall</div>
+                    <div id="gold">Gold: 0</div>
+                    <div id="potions">Potions: 0</div>
+                    <div id="life">Life: 20 / 20</div>
+                </div>
+                <div class="stats">
+                    <div class="row">
+                        <div class="label" id="offenses">Offenses</div>
+                        <div class="stats-row">
+                            <div><canvas onclick="javascript:hero.show('offense', 0, event)" id="offense0" width="32" height="32"></canvas></div>
+                            <div><canvas onclick="javascript:hero.show('offense', 1, event)" id="offense1" width="32" height="32"></canvas></div>
+                            <div><canvas onclick="javascript:hero.show('offense', 2, event)" id="offense2" width="32" height="32"></canvas></div>
+                            <div><canvas onclick="javascript:hero.show('offense', 3, event)" id="offense3" width="32" height="32"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="label" id="defenses">Defenses</div>
+                        <div class="stats-row">
+                            <div><canvas onclick="javascript:hero.show('defense', 0, event)" id="defense0" width="32" height="32"></canvas></div>
+                            <div><canvas onclick="javascript:hero.show('defense', 1, event)" id="defense1" width="32" height="32"></canvas></div>
+                            <div><canvas onclick="javascript:hero.show('defense', 2, event)" id="defense2" width="32" height="32"></canvas></div>
+                            <div><canvas onclick="javascript:hero.show('defense', 3, event)" id="defense3" width="32" height="32"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="label" id="accessorries">Accessorries</div>
+                        <div class="stats-row">
+                            <div><canvas onclick="javascript:hero.show('accessory', 0, event)" id="accessory0" width="32" height="32"></canvas></div>
+                            <div><canvas onclick="javascript:hero.show('accessory', 1, event)" id="accessory1" width="32" height="32"></canvas></div>
+                            <div><canvas onclick="javascript:hero.show('accessory', 2, event)" id="accessory2" width="32" height="32"></canvas></div>
+                            <div><canvas onclick="javascript:hero.show('accessory', 3, event)" id="accessory3" width="32" height="32"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="actions">
+            <div id="dungeonBtn" onclick="javascript:map.load('dungeon')">Dungeon</div>
+            <div onclick="javascript:map.load('guildHall')">Guild Hall</div>
+            <div id="shopBtn" onclick="javascript:shop.show()">Shop</div>
+            <div id="inventory" onclick="javascript: createDialogWithTable(undefined, 'Inventory', hero.items)">Inventory (0)</div>
+        </div>
+    </main>
+    
+    <script src="./files/data/settings.js"></script>
+    <script src="./files/js/dropdown.js"></script>
+    <script src="./files/js/createDialogWithTable.js"></script>
+    <script src="./files/js/HeroJS-2025/SpriteSheet.js"></script>
+    <script src="./files/js/HeroJS-2025/Chance.js"></script>
+    <script src="./files/js/Item.js"></script>
+    <script src="./files/js/Unit.js"></script>
+    <script src="./files/js/GameMap.js"></script>
+    <script src="./files/js/Shop.js"></script>
+    <script src="./files/data/maps.js"></script>
+    <script src="./files/data/items.js"></script>
+    <script src="./files/data/units.js"></script>
+    <script>
+        function formatDuration(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+
+            const format = (num) => String(parseInt(num)).padStart(2, "0");
+
+            return `${format(hours)}:${format(minutes)}:${format(secs)}`;
+        }
+    </script>
+    <script>
+        sprites = new SpriteSheet();
+        sprites.load("./files/assets/stone-soup.png");
+
+        const canvas = document.getElementById("canvas");
+        const ctx    = canvas.getContext("2d");
+
+        map  = new GuildHall();
+        map.load("guildHall");
+
+        hero = new Hero();
+        hero.newUnit();
+
+        $summons = [];
+
+        shop = new Shop();
+
+        const bound = document.querySelector(".left-panel").getBoundingClientRect();
+        canvas.width = bound.width;
+        canvas.height = bound.height;
+
+        function draw(t) {
+            requestAnimationFrame(draw);
+
+            map.draw(ctx, sprites);
+            map.tick(t);
+
+            hero.draw(ctx, sprites);
+            hero.tick(t);
+
+            for (const summon of $summons) {
+                if (summon) {
+                    summon.draw(ctx, sprites);
+                    summon.tick(t);
+                }
+            }
+
+            shop.tick(t);
+        }
+
+        requestAnimationFrame(draw);
+
+
+        /*const images = [
+            { image: "https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg", label: "India" },
+            { image: "https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg", label: "USA" },
+            { image: "https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg", label: "England" },
+            { image: "https://upload.wikimedia.org/wikipedia/en/0/05/Flag_of_Brazil.svg", label: "Brazil" }
+        ];
+        createImageDropdown(document.body, images);*/
+    </script>
+</body>
+</html>

@@ -14,12 +14,44 @@ class Unit {
         this.gold        = 0;
         this.potions     = 0;
         this.items       = {};
+        this.buffs       = [];
+        this.feats       = {}; // basic things
         this.x           = 0;
         this.y           = 0;
+        this.stealthy     = undefined;
         this.graphicState = false;
         this.updateEquipped= false;
         this.updatedItems  = false;
+        // add sight as buff
         this.alive = true;
+    }
+
+    improveFeat(name, value)
+    {
+        if (!(name in this.feats)) {
+            this.feats[name] = 0;
+        }
+
+        this.feats[name] += value;
+    }
+
+    getFeat(name)
+    {
+        return this.feats[name];
+    }
+
+    hasFeat(name, higher=1)
+    {
+        const f = this.feats[name];
+        return f && f >= higher;
+    }
+
+    addBuf(buf) {
+        this.buffs.push(buf);
+    }
+
+    remBuf(buf) {
+        this.buffs.splice(this.buffs.indexOf(buf), 1);
     }
 
     sell(itemId)
@@ -75,8 +107,8 @@ class Unit {
 
     recover(stat, value) {
         const v = this[stat][0] + value;
-        if (v > this[stat][1]) {
-            this[stat][0] = this[stat][1];
+        if (v > this[stat][1] + (this[stat][2]||0)) {
+            this[stat][0] = this[stat][1] + (this[stat][2]||0);
         } else {
             this[stat][0] = v;
         }
@@ -115,7 +147,15 @@ class Unit {
             this.isKnockedDown = false;
             return;
         }
+        if (this.delay > 0) {
+            --this.delay;
+            return;
+        }
         if (!Array.isArray(targets)) targets = [targets];
+        if (targets.length == 0) {
+            console.info("no targets");
+            return;
+        }
         const target = Chance.pick(targets);
         target.active = false;
         const p = this._life[0] / (this._life[1]+(this._life[2]||0)) * 100;
@@ -126,6 +166,21 @@ class Unit {
             return;
         }
 
+        const stealth = target.getFeat("stealth") || 0;
+        
+        if (stealth > 0 && target.stealthy != false) {
+            const sight   = this.getFeat("sight") || 0;
+            const c       = sight / stealth * 50;
+            const cr      = !Chance.chance(c);
+
+            if (target.stealthy == undefined) target.stealthy = cr;
+
+            target.stealthy &&= cr;
+
+            if (cr)
+                return;
+        }
+        
         const atkRoll = Chance.pick(this.offense);
         const defRoll = Chance.pick(target.defense);
 
@@ -168,10 +223,16 @@ class Unit {
     }
 
     equip(itemId, id) {
-        const type = $items[itemId].type;
+        const item = $items[itemId];
+        const type = item.type;
 
         if (!this.hasItem(itemId)) {
             console.log("dont have item");
+            return false;
+        }
+
+        if (this.isEquipped(itemId) && item.stackable == false) {
+            alert(`Only one ${item.name} can be equipped`);
             return false;
         }
 
@@ -184,6 +245,13 @@ class Unit {
         this.updateEquipped = true;
         const ev = new CustomEvent("Idle.equip", {detail: {target: this, itemId, slot: id}});
         dispatchEvent(ev);
+    }
+
+    isEquipped(itemId) {
+        const item = $items[itemId];
+        const type = item.type;
+        const list = this[type].filter(id => itemId == id);
+        return list.length > 0;
     }
 
     hasItem(itemId, amount=1)
@@ -272,6 +340,7 @@ class Unit {
         this.wasHit = false;
         this.updateEquipped = false;
         this.updatedItems   = false;
+        //this.stealthy       = undefined;
     }
 
     item(name) {
@@ -347,6 +416,14 @@ class Unit {
             //ctx.strokeRect(this.x + col * 32, this.y + row * 32, 32, 32);
         }
 
+        if (this.hasFeat("stealth", 1) && this.stealthy != false) {
+            // 1516
+            const {row, col} = this.drawLocation();
+
+            sprites.drawByID(ctx, 1516, this.x + col * 32, this.y + row * 32, 32, 32);
+            return;
+        }
+
         if (this.wasHit) {
             sprites.drawByID(ctx, 3193, this.x + col * 32, this.y + row * 32, 32, 32);
         }
@@ -356,11 +433,32 @@ class Unit {
                 sprites.drawByID(ctx, layer, this.x + col * 32, this.y + row * 32, 32, 32)
             }
         }
+        
+
+        if (this.hasFeat("sight")) {
+            // Create a radial gradient for the light effect
+            // const gradient = ctx.createRadialGradient(150, 100, 0, 150, 100, 100);
+            const gradient = ctx.createRadialGradient(this.x + col * 32 + 16, this.y + row * 32 + 16, 0,
+                                                      this.x + col * 32 + 16, this.y + row * 32 + 16, 64);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');  // Bright white at the center
+            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)'); // Transparent at the edge
+
+             ctx.save();
+            // Set globalCompositeOperation to "lighter"
+            ctx.globalCompositeOperation = 'lighter';
+
+            // Draw the gradient as a circle
+            ctx.beginPath();
+            ctx.fillStyle = gradient;
+            ctx.arc(this.x + col * 32, this.y + row * 32, 64, 0, Math.PI * 2);
+            ctx.fill();
+             ctx.restore();
+        }
     
         ctx.fillStyle = "black";
         ctx.fillRect(this.x + col * 32, this.y + row * 32 - 4, 25, 3);
         ctx.fillStyle = "red";
-        ctx.fillRect(this.x + col * 32 + 1, this.y + row * 32 - 3, this.life[0] / this.life[1] * 25, 1);
+        ctx.fillRect(this.x + col * 32 + 1, this.y + row * 32 - 3, this.life[0] / (this.life[1]+(this.life[2]||0)) * 25, 1);
         sprites.drawByID(ctx, this.graphicId, this.x + col * 32, this.y + row * 32, 32, 32);
     }
 }
@@ -396,7 +494,7 @@ class Hero extends Unit {
     
     save() {
         const data = {};
-        const keys = ["team", "_life", "offense", "defense", "accessory", "items", "gold", "potions", "summons"];
+        const keys = ["team", "_life", "offense", "defense", "accessory", "items", "gold", "potions", "summons", "feats"];
         for (const key of keys) {
             data[key] = this[key];
         }
@@ -408,10 +506,25 @@ class Hero extends Unit {
         for (const name in data) {
             this[name] = data[name];
         }
+        
+        this.reequip("offense");
+        this.reequip("defense");
+        this.reequip("accessory");
+
         this.update("all");
-        this.redraw_equip("offense");
-        this.redraw_equip("defense");
-        this.redraw_equip("accessory");
+    }
+
+    reequip(type) {
+        const arr  = this[type];
+        if (Array.isArray(arr)) {
+            for (let i = 0; i < arr.length; ++i) {
+                const itemId = arr[i];
+                const item = $items[itemId];
+                this.unequip(type, i);
+                this.equip(itemId, i);
+            }
+        }
+        this.redraw_equip(type);
     }
 
     redraw_equip(type) {
@@ -430,7 +543,7 @@ class Hero extends Unit {
     update(type) {
         if (this == hero) {
             if (type == "life" || type == "all")
-                document.getElementById("life").textContent = `Life ${this.life[0]+this.life[2]}/${this.life[1]+this.life[2]}`;
+                document.getElementById("life").textContent = `Life ${this.life[0]}/${this.life[1]+(this.life[2]||0)}`;
             
             if (map.upatedLoad || type == "map" || type == "all")
                 document.getElementById("location").textContent = `Location: ${map.name}`;

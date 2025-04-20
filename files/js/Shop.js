@@ -176,7 +176,7 @@ class Shop {
                 const c = confirm(`Buy life for ${cost}G`);
                 if (c && hero.gold >= cost) {
                     hero.updateStat("life", hero.life[0]+1, hero.life[1]+1);
-                    hero.give("gold", cost);
+                    hero.give("gold", -cost);
                 }
             break;
         }
@@ -184,8 +184,19 @@ class Shop {
 
     refresh() {
         this.items = ["potions"];
-        const items = Object.keys($items);
-        for (let i = 0; i < 4; ++i) {
+        let items = [];//= Object.keys($items);
+        const unlocked = $maps.dungeon.unlocked;
+        for (let i = 1; i <= unlocked; ++i) {
+            const list = $other[i];
+            if (list == undefined) continue;
+            for (let j = 0; j < list.length; ++j) {
+                const c = i / unlocked * 100;
+                if (Chance.chance(c)) {
+                    items.push(list[j]);
+                }
+            }
+        }
+        for (let i = 0; i < 4 && items.length > 0; ++i) {
             const itemId = Chance.pick(items);
             const item   = $items[itemId];
             if (item.shop != false)

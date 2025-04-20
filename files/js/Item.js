@@ -72,4 +72,21 @@ class Accessory extends Item {
         Object.assign(this, obj);
         this.type = "accessory";
     }
+
+    unequip(from, map, id) {
+        super.unequip(from, map, id);
+        if (this.feats)
+            for (const name in this.feats) {
+                from.improveFeat(name, -this.feats[name]);
+            }
+    }
+
+    equip(from, map, id) {
+        super.equip(from, map, id);
+
+        if (this.feats)
+            for (const name in this.feats) {
+                from.improveFeat(name, this.feats[name]);
+            }
+    }
 }

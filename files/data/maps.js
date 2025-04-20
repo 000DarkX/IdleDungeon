@@ -56,10 +56,14 @@ class Dungeon extends GameMap {
 
         this.spawns[1] = [ "rat", "worm" ];
         this.spawns[2] = [ "rat", "worm", "wasp"];
-        this.spawns[3] = ["sheep", "wasp"];
+        this.spawns[3] = ["sheep", "wasp"]; //boss sheep
         this.spawns[4] = ["ratII", "snake", "wasp", "rare1"];
         this.spawns[5] = ["frog", "ratII", "snake", "wasp"];
-        this.spawns[6] = ["frog", "pig"];
+        this.spawns[6] = ["frog", "pig"]; // boss pig 
+        this.spawns[7] = ["grat", "stealthWorm"];
+        this.spawns[8] = ["blueSlime", "blueSlimeII"];
+        this.spawns[9] = ["combatDummy"];
+        this.spawns[10] = ["ant", "stealthWorm"];
 
         this.levelDetail = {};
 
@@ -93,7 +97,12 @@ class Dungeon extends GameMap {
     postLoad(name, level) {
         if (level == undefined) level = parseInt(prompt("Choose a level", this.level));
         if (level <= this.unlocked && level > 0) this.level = level;
-        else map.load("guildHall");
+        else return map.load("guildHall");
+        if (level < 10) {
+            this.tileId = 587;
+        } else if (level < 20) {
+            this.tileId = 590;
+        }
     }
 
     load(name)
@@ -170,11 +179,25 @@ class Dungeon extends GameMap {
 
     spawnRandom()
     {
-        const spawner = Chance.pick(this.spawns[this.#level]);
-        const target  = $units[spawner].clone();
-        target.troopLoc = this.target.length - 1;
-        target.equipItems();
-        this.target.push(target);
+        let target;
+        for (let i =0 ; i < 99; ++i) {
+            const spawner = Chance.pick(this.spawns[this.#level]);
+            target  = $units[spawner].clone();
+            
+            if (Chance.chance(target.rarity||0)) {
+                continue;
+            }
+
+            target.troopLoc = this.target.length - 1;
+            //target.equipItems();
+            target.setup();
+            this.target.push(target);
+            if (target.alert) {
+                alert(target.alert);
+            }
+            break;
+        }
+        
         return target;
     }
 

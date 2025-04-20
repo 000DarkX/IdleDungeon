@@ -19,6 +19,10 @@ class BasicEnemyUnit extends Unit
         super.defeat(target);
     }
 
+    setup() {
+        this.equipItems();
+    }
+
     equipItems() {
         let id = 0;
         for (const item of this.equipsOffense) {
@@ -76,6 +80,39 @@ $units = {
             {itemId: "gold", chance: 100, amount: 2},
         ]
     }),
+    grat: new BasicEnemyUnit({
+        name: "Gray Rat",
+        graphicId: 4089,
+        life: [28, 28],
+        graphicLayers: [],
+        equipsOffense: ["gratClaw", "sbow", "stone", "stone"],
+        equipsDefense: ["leather", "cloth", "snakeScale", "leather"],
+        equipsAccessory: ["lantern"],
+        drop: [
+            {itemId: "sbow", chance: 10, amount: 1},
+            {itemId: "latern", chance: 10, amount: 1},
+            {itemId: "gold", chance: 100, amount: 5},
+            {itemId: "gold", chance: 1, amount: 5},
+        ]
+    }),
+    stealthWorm: new BasicEnemyUnit({
+        name: "Stealth Worm",
+        graphicId: 4108,
+        life: [20, 20],
+        equipsOffense: ["wormBiteII"],
+        equipsDefense: ["silk", "cloth"],
+        equipsAccessory: [],
+        feats: {
+            stealth: 1,
+        },
+        drop: [
+            {itemId: "rock", chance: 20, amount: 1},
+            {itemId: "stone", chance: 5, amount: 1},
+            {itemId: "silk", chance: 1, amount: 1},
+            {itemId: "latern", chance: 1, amount: 1},
+            {itemId: "gold", chance: 100, amount: 1},
+        ]
+    }),
     worm: new BasicEnemyUnit({
         name: "Worm",
         graphicId: 4108,
@@ -88,6 +125,73 @@ $units = {
             {itemId: "stone", chance: 5, amount: 1},
             {itemId: "silk", chance: 1, amount: 1},
             {itemId: "gold", chance: 100, amount: 1},
+        ]
+    }),
+    blueSlime: new BasicEnemyUnit({
+        name: "Blue Slime",
+        graphicId: 3999,
+        life: [45, 45],
+        equipsOffense: ["icicleKnife"],
+        equipsDefense: ["icedJelly", "icedJelly", "leather", "leather"],
+        equipsAccessory: [],
+        drop: [
+            {itemId: "rock", chance: 20, amount: 1},
+            {itemId: "stone", chance: 5, amount: 1},
+            {itemId: "icicleKnife", chance: 5, amount: 1},
+            {itemId: "icedJelly", chance: 5, amount: 1},
+            {itemId: "gold", chance: 100, amount: 7},
+        ]
+    }),
+    blueSlimeII: new BasicEnemyUnit({
+        name: "Blue Slime",
+        graphicId: 3999,
+        rarity: 90,
+        graphicLayers: [
+            3737
+        ],
+        life: [55, 55],
+        equipsOffense: ["icicleKnifeII", "icicleKnife"],
+        equipsDefense: ["icedJelly", "icedJelly", "leather", "leather"],
+        equipsAccessory: [],
+        drop: [
+            {itemId: "rock", chance: 20, amount: 1},
+            {itemId: "stone", chance: 5, amount: 1},
+            {itemId: "permLife", chance: 5, amount: 1},
+            {itemId: "permLifeII", chance: 5, amount: 1},
+            {itemId: "icicleKnife", chance: 8, amount: 1},
+            {itemId: "icedJelly", chance: 8, amount: 1},
+            {itemId: "gold", chance: 100, amount: 1},
+        ]
+    }),
+    combatDummy: new BasicEnemyUnit({
+        name: "Combat Dummy",
+        graphicId: 4430,
+        types: ["doll"],
+        alert: `A combat dummy has entered! This will be a long fight!`,
+        life: [100, 100],
+        equipsOffense: ["vhvstone", "hvstone", "hvstone", "hvstone"],
+        equipsDefense: ["dummyArmor", "dummyArmor", "dummyArmor", "dummyArmor"],
+        equipsAccessory: [],
+        drop: [
+            {itemId: "rock", chance: 20, amount: 1},
+            {itemId: "stone", chance: 20, amount: 1},
+            {itemId: "vhvstone", chance: 5, amount: 1},
+            {itemId: "dummyArmor", chance: 5, amount: 1},
+            {itemId: "gold", chance: 100, amount: 15},
+        ]
+    }),
+    ant: new BasicEnemyUnit({
+        name: "Ant",
+        graphicId: 4064,
+        life: [30, 30],
+        equipsOffense: ["gratClaw", "gratClaw", "gratClaw", "lbow"],
+        equipsDefense: ["antArmor", "antArmor", "antArmor", "antArmor"],
+        equipsAccessory: [],
+        drop: [
+            {itemId: "rock", chance: 20, amount: 1},
+            {itemId: "stone", chance: 20, amount: 1},
+            {itemId: "lbow", chance: 1, amount: 1},
+            {itemId: "gold", chance: 100, amount: 10},
         ]
     }),
     wasp: new BasicEnemyUnit({

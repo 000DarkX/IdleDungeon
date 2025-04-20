@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Idle Dungeon v0.0.11</title>
+    <title>Idle Dungeon v0.0.14</title>
     <link rel="stylesheet" href="./files/css/dropdown.css">
     <link rel="stylesheet" href="./files/css/dialog.css">
     <style>
@@ -185,7 +185,9 @@
                     <button onclick="hero.give('gold', 100); hero.cheat= true;">Give Gold +100</button>
                     <button onclick="hero.give('potion', 10); hero.cheat=true;">Give Potion +10</button>
                     <button onclick="hero.updateStat('life', hero.life[0] + 1, hero.life[1] + 1); hero.cheat=true;">Give Perm Life +1</button>
+                    <button onclick="unlockAll()">Unlock all dungeon floors</button>
                     <button onclick="itemBundle1()">Item Bundle 1</button>
+                    <button onclick="itemBundle2()">Item Bundle 2</button>
                 </details>
             </div>
             <div>
@@ -212,10 +214,15 @@
     <script src="./files/js/Unit.js"></script>
     <script src="./files/js/GameMap.js"></script>
     <script src="./files/js/Shop.js"></script>
+    <script src="./files/data/other.js"></script>
     <script src="./files/data/maps.js"></script>
     <script src="./files/data/items.js"></script>
     <script src="./files/data/units.js"></script>
     <script>
+        function unlockAll() 
+        {
+            $maps.dungeon.unlocked = $settings.maxDungeonLevel;
+        }
         function itemBundle1() {
             hero.cheat = true;
             hero.give("wool");
@@ -225,6 +232,19 @@
             hero.give("ratStaff2");
             hero.give("snakeScale");
             hero.give("silk");
+        }
+        function itemBundle2() {
+            hero.cheat = true;
+            hero.give("wool");
+            hero.give("cloth");
+            hero.give("knife");
+            hero.give("ratStaff");
+            hero.give("ratStaff2");
+            hero.give("snakeScale");
+            hero.give("hvstone");
+            hero.give("leather");
+            hero.give("silk");
+            hero.give("amuletOfLife");
         }
     </script>
     <script>
@@ -287,8 +307,6 @@
     
             hero = new Hero();
             hero.newUnit();
-
-            $summons = hero.summons;
 
             shop = new Shop();
 

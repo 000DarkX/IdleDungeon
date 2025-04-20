@@ -16,11 +16,6 @@ class BasicAttack extends Offense {
 
     attackTarget(attacker, defender, defenseRoll) {
         
-        if (attacker.delay > 0) {
-            --attacker.delay;
-            return;
-        }
-
         if (this.delay) {
             attacker.delay = this.delay;   
         }
@@ -122,6 +117,7 @@ class BasicSummon extends Accessory {
         unit.type  = "summon";
         unit.team  = "good";
         unit.troopLoc = this.summonId;
+        from.summons[this.summonId] = this.summon;
         $summons[this.summonId] = unit;
         super.equip(from, map, id);
     }
@@ -141,12 +137,14 @@ $items = {
     potions: new Item({
         graphicId: 2713,
         cost: 25,
+        sellable: false,
         name: "Small Life Potion",
         desc: "A life potion. heals by 25%"
     }),
     permLife: new BasicPotion({
         graphicId: 2713,
         itemId: "permLife",
+        sellable: false,
         cost: 25,
         life: 1,
         lifeLimit: 25,
@@ -156,6 +154,7 @@ $items = {
     permLifeII: new BasicPotion({
         graphicId: 2713,
         itemId: "permLifeII",
+        sellable: false,
         cost: 50,
         life: 1,
         lifeLimit: 30,
@@ -168,13 +167,31 @@ $items = {
         name: "Amulet of Life",
         life: 5,
         desc: "Red amulet. Gives you 5 life."
-    }),    
+    }),   
+    lantern: new Accessory({
+        graphicId: 2635,
+        cost: 500,
+        sellable: false,
+        stackable: false,
+        name: "Lantern",
+        feats: {
+            sight: 1,
+        },
+        desc: "Lantern allows you to see stealh enemies. Sight +1"
+    }),     
     amuletOfLifeII: new Accessory({
         graphicId: 2259,
         cost: 150,
         name: "Amulet of Life II",
         life: 10,
         desc: "Red amulet. Gives you 10 life."
+    }),   
+    amuletOfLifeIII: new Accessory({
+        graphicId: 2259,
+        cost: 750,
+        name: "Amulet of Life III",
+        life: 15,
+        desc: "Red amulet. Gives you 15 life."
     }),   
     ratStaff: new BasicSummon({
         name: "Rat Staff",
@@ -194,9 +211,43 @@ $items = {
         summonId: 1,
         graphicId: 2828
     }),
+    sheep: new BasicSummon({
+        name: "Sheep Staff",
+        desc: `Summons a sheep! For 1st slot!`,
+        cost: 500,
+        shop: true,
+        summon: "sheep",
+        summonId: 0,
+        graphicId: 2828
+    }),
 }
 
 $weapons = {
+    sbow: new BasicAttack({
+        name:"Short Bow",
+        desc: `A Short bow. Deals 3 piercing damage`,
+        cost: 50,
+        attacks: [{ damage: 3,
+        damageType: "pierce" }],
+        graphicId: 3166
+    }),
+    lbow: new BasicAttack({
+        name:"Long Bow",
+        desc: `A Short bow. Deals 5 piercing damage`,
+        cost: 500,
+        attacks: [{ damage: 5,
+        damageType: "pierce" }],
+        graphicId: 3166
+    }),
+    gratClaw: new BasicAttack({
+        name:"Gray Rat Claw",
+        desc: `Deals 5 slash`,
+        cost: 500,
+        shop: false,
+        attacks: [{ damage: 5,
+        damageType: "slash" }],
+        graphicId: 3166
+    }),
     rock: new BasicAttack({
         name:"Rock",
         desc: `A rock. Deals 1 blunt damage`,
@@ -226,6 +277,27 @@ $weapons = {
         delay: 1,
         graphicId: 3172
     }),
+    vhvstone: new BasicAttack({
+        name: "Very Heavy Stone",
+        desc: `A very heavy stone. Deals 15 blunt damage. Delay 5. knockdown 2%`,
+        cost: 750,
+        shop: false,
+        knockdown: 2,
+        bonus: {
+            nature: {
+                knockdown: 14
+            },
+            doll: {
+                knockdown: 14
+            }
+        },
+        attacks: [{
+            damage: 15,
+            damageType: "blunt",
+        }],
+        delay: 5,
+        graphicId: 2647
+    }),
     hstone: new BasicAttack({
         name: "Headache Stone",
         desc: `A heacache stone. Deals 3 blunt damage. knockdown 1%.`,
@@ -251,6 +323,47 @@ $weapons = {
         damageType: "magic" }],
         graphicId: 2828
     }),
+    wormBiteII: new BasicAttack({
+        name: "Worm Staff",
+        desc: `Deals 3 Magic Damage`,
+        cost: 350,
+        shop: false,
+        attacks: [{ damage: 3,
+        damageType: "magic" }],
+        graphicId: 2828
+    }),
+    icicleKnife: new BasicAttack({
+        name: "Icicle",
+        desc: `A small Icicle knife. Deals 2 slash damage, 3 ice damage`,
+        cost: 500,
+        attacks: [
+            {
+                damage: 2,
+                damageType: "slash",
+            },
+            {
+                damgae: 3,
+                damageType: "ice"
+            }
+        ],
+        graphicId: 2971
+    }),
+    icicleKnifeII: new BasicAttack({
+        name: "Icicle",
+        desc: `A small Icicle knife. Deals 3 slash damage, 5 ice damage`,
+        cost: 500,
+        attacks: [
+            {
+                damage: 3,
+                damageType: "slash",
+            },
+            {
+                damgae: 5,
+                damageType: "ice"
+            }
+        ],
+        graphicId: 2971
+    }),
     knife: new BasicAttack({
         name: "Knife",
         desc: `A small knife. Deals 3 slash damage`,
@@ -275,6 +388,23 @@ $weapons = {
 }
 
 $armors = {
+    icedJelly:
+    new BasicDefense({
+        name: "Iced Jelly Armor",
+        desc: `Armor that icy and jelly like. 
+               0% Chance to block for 1/2 damage and prevents 5 blunt damage, 3 ice damage.
+               Weak to Fire -1`,
+        cost: 500,
+        defense: 0,
+        protections: {
+            fire: -1,
+            ice: 3,
+            blunt: 5
+        },
+        ac: 0,
+        defenseType: "armor",
+        graphicId: 2464
+    }),
     cloth:
     new BasicDefense({
         name: "Cloth",
@@ -329,6 +459,38 @@ $armors = {
         protections: {
         },
         ac: 3,
+        defenseType: "armor",
+        graphicId: 2404
+    }),
+    dummyArmor:
+    new BasicDefense({
+        name: "Dummy Armor",
+        desc: `Dummy Armor. 4% Chance to block for 1/2 damage and prevents 5 blunt damage, 1 magic damage.
+                Weak to slash -5`,
+        cost: 250,
+        shop: false,
+        defense: 0,
+        mdefense: 1,
+        protections: {
+            slash: -5,
+            blunt: 5
+        },
+        ac: 4,
+        defenseType: "armor",
+        graphicId: 2404
+    }),
+    antArmor:
+    new BasicDefense({
+        name: "Ant Armor",
+        desc: `Ant Armor. 8% Chance to block for 1/2 damage and prevents 1 physical damage, 1 magic damage.`,
+        cost: 2500,
+        shop: false,
+        defense: 1,
+        mdefense: 1,
+        protections: {
+            
+        },
+        ac: 8,
         defenseType: "armor",
         graphicId: 2404
     }),

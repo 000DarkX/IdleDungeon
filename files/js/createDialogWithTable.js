@@ -95,15 +95,18 @@ function createDialogWithTable(containerId, dialogTitle, data) {
         };
         actionCell.appendChild(useBtn);
 
-        const sellBtn  = document.createElement("button");
-        sellBtn.textContent = `Sell ${item.cost * 0.1}G`;
-        sellBtn.onclick = e => {
-            if (dat.amount > 0) {
-                hero.sell(id);
-                amountCell.textContent = dat.amount;
-            }
-        };
-        actionCell.appendChild(sellBtn);
+        
+        if (item.sellable != false) {
+            const sellBtn  = document.createElement("button");
+            sellBtn.textContent = `Sell ${item.cost * 0.1}G`;
+            sellBtn.onclick = e => {
+                if (dat.amount > 0) {
+                    hero.sell(id);
+                    amountCell.textContent = dat.amount;
+                }
+            };
+            actionCell.appendChild(sellBtn);
+        }
         row.appendChild(actionCell);
 
         tbody.appendChild(row);

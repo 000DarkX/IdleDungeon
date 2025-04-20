@@ -129,9 +129,10 @@ class BasicSummon extends Accessory {
 
 class BasicPotion extends Item {
     use(from, map) {
-        this.give(this.itemId, -1);
+        from.give(this.itemId, -1);
         if (this.life != undefined && from.life[1] < this.lifeLimit) {
             from.updateStat("life", from.life[0] + 1, from.life[1] + 1);
+            hero.update("items");
         }
     }
 }
@@ -143,7 +144,7 @@ $items = {
         name: "Small Life Potion",
         desc: "A life potion. heals by 25%"
     }),
-    permLife: new Item({
+    permLife: new BasicPotion({
         graphicId: 2713,
         itemId: "permLife",
         cost: 25,
@@ -152,7 +153,7 @@ $items = {
         name: "Small Perm Life Potion",
         desc: "+1 perm life up to 25"
     }),
-    permLifeII: new Item({
+    permLifeII: new BasicPotion({
         graphicId: 2713,
         itemId: "permLifeII",
         cost: 50,

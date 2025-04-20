@@ -1,5 +1,22 @@
 /* Dialog styling */
 .dialog-parent {
+    /*display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 20px;
+    z-index: 1000;
+*/
+    height: 600px;
+    overflow: auto;
+}
+
+.dialog-container {
     display: none;
     position: fixed;
     top: 50%;
@@ -11,13 +28,6 @@
     border-radius: 8px;
     padding: 20px;
     z-index: 1000;
-
-    height: 600px;
-    overflow: auto;
-}
-
-.dialog-container {
-    
 }
 
 .dialog-header {

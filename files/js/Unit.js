@@ -108,7 +108,7 @@ class Unit {
         if (this.alive == false) return;
         const container = document.getElementById(`${type}${id}`);
         const itemz     = Object.keys(this.items).filter(id => $items[id].type == type && this.hasItem(id, 1));
-        return createImageDropdown(container.parentElement, itemz, sprites, this, type, id);
+        return createImageDropdown(document.body || container.parentElement, itemz, sprites, this, type, id);
     }
 
     unequip(type, id) {
@@ -151,24 +151,33 @@ class Unit {
         return this.items[itemId].amount >= amount;
     }
 
-    _callEventGive(target, itemId, amount) {
-        const ev = new CustomEvent("Idle.give", {detail: {target, itemId, amount}});
+    _callEventGive(target, itemId, amount, bulk=false) {
+        const ev = new CustomEvent("Idle.give", {detail: {target, itemId, amount, bulk}});
         dispatchEvent(ev);
     }
 
-    give(itemId, amount) {
+    give(itemId, amount, bulk=false) {
+        if (Array.isArray(itemId)) {
+            let idx = 0;
+            for (const item of itemId) {
+                this.give(item.itemId, item.amount, idx < itemId.length);
+                ++idx;
+            }
+            return;
+        }
+
         if (itemId == "potions" || itemId == "potion") {
             this.potions += amount;
             if (this.potions < 0) this.potions = 0;
-            this._callEventGive(this, itemId, amount);
-            return;
+            this._callEventGive(this, itemId, amount, bulk);
+            return true;
         }
 
         if (itemId == "gold") {
             this.gold += amount;
             if (this.gold < 0) this.gold = 0;
-            this._callEventGive(this, itemId, amount);
-            return;
+            this._callEventGive(this, itemId, amount, bulk);
+            return true;
         }
 
         if (!(itemId in this.items)) {
@@ -186,7 +195,7 @@ class Unit {
             return false;
         }
 
-        this._callEventGive(this, itemId, amount);
+        this._callEventGive(this, itemId, amount, bulk);
 
         return true;
     }
@@ -199,8 +208,8 @@ class Unit {
 
     newUnit() {
         this.giveAndEquip("rock", 1, 0);
-        this.give("stone", 1);
-        this.give("cloth", 1);
+        this.give("stone", 1, true);
+        this.give("cloth", 1, false);
     }
 
     tick(t) {
@@ -295,7 +304,12 @@ class Unit {
         if (this.wasHit) {
             sprites.drawByID(ctx, 3193, this.x + col * 32, this.y + row * 32, 32, 32);
         }
-
+        
+        if (this.graphicLayers) {
+            for (const layer of this.graphicLayers) {
+                sprites.drawByID(ctx, layer, this.x + col * 32, this.y + row * 32, 32, 32)
+            }
+        }
     
         ctx.fillStyle = "black";
         ctx.fillRect(this.x + col * 32, this.y + row * 32 - 4, 25, 3);
@@ -311,7 +325,9 @@ class Hero extends Unit {
         this.team = "good";
         
         addEventListener("Idle.give", e => {
-            this.update();
+            const detail = e.detail;
+            if (detail.bulk == false)
+                this.update();
         });
         addEventListener("Idle.unlock", e => {
             this.update();

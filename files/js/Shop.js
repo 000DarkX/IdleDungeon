@@ -46,7 +46,7 @@ class Shop {
         closeButton.className = "dialog-close";
         closeButton.textContent = "×";
         closeButton.addEventListener("click", () => {
-            parent.remove();
+            dialog.remove();
             overlay.remove();
             //parent.classList.remove("show");
             //dialog.classList.remove("show");
@@ -141,28 +141,28 @@ class Shop {
         // Append elements to the dialog
         dialog.appendChild(closeButton);
         dialog.appendChild(header);
-        dialog.appendChild(table);
-        parent.appendChild(dialog);
+        parent.appendChild(table);
+        dialog.appendChild(parent);
 
         // Append dialog and overlay to the container
         container.appendChild(overlay);
-        container.appendChild(parent);
+        container.appendChild(dialog);
 
         // Show dialog and overlay
-        parent.classList.add("show");
+        dialog.classList.add("show");
         overlay.classList.add("show");
 
         // Close dialog when overlay is clicked
         overlay.addEventListener("click", () => {
             overlay.remove();
-            parent.remove();
+            dialog.remove();
             //parent.classList.remove("show");
             //dialog.classList.remove("show");
             //overlay.classList.remove("show");
         });
 
         this.overlay = overlay;
-        this.parent = parent;
+        this.parent = dialog;
     }
 
     refresh() {

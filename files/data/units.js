@@ -8,11 +8,13 @@ class BasicEnemyUnit extends Unit
     }
 
     defeat(target) {
+        let items = [];
         for (const obj of this.drop) {
             if (Chance.chance(obj.chance)) {
-                target.give(obj.itemId, obj.amount||1);
+                items.push({itemId: obj.itemId, amount: obj.amount||1});
             }
         }
+        target.give(items, undefined);
         super.defeat(target);
     }
 
@@ -60,6 +62,9 @@ $units = {
         name: "Brown Rat II",
         graphicId: 4115,
         life: [18, 18],
+        graphicLayers: [
+            3737
+        ],
         equipsOffense: ["rock", "rock"],
         equipsDefense: ["cloth"],
         equipsAccessory: [],
@@ -118,7 +123,7 @@ $units = {
         name: "Green Snake",
         graphicId: 4137,
         life: [25, 25],
-        equipsOffense: ["knife", "stone"],
+        equipsOffense: ["snakeBite", "stone"],
         equipsDefense: ["snakeScale", "silk"],
         equipsAccessory: [],
         drop: [

@@ -36,6 +36,7 @@ class BasicAttack extends Offense {
 class BasicDefense extends Defense {
     constructor(obj) {
         super();
+        this.protections = {};
         Object.assign(this, obj);
     }
 
@@ -80,7 +81,7 @@ class BasicSummon extends Accessory {
             return alert("You cannot unequip during battle!");
         }
         $summons[this.summonId] = undefined;
-        super.equip(from, map, id);
+        super.unequip(from, map, id);
     }
 
     equip(from, map, id) {
@@ -101,7 +102,7 @@ $items = {
         desc: "A life potion. heals by 25%"
     }),
     stuffedAnimal: new Item({
-        graphicId: 2622,
+        graphicId: 6039,
         cost: 50,
         name: "Stuffed Animal",
         desc: "A stuffed animal! only for looks!"
@@ -161,6 +162,17 @@ $weapons = {
         attacks: [{
             damage: 3,
             damageType: "slash",
+        }],
+        graphicId: 2971
+    }),
+    snakeBite: new BasicAttack({
+        name: "Snake Bite",
+        desc: `Deals 3 pierce damage`,
+        cost: 35,
+        shop: false,
+        attacks: [{
+            damage: 3,
+            damageType: "pierce",
         }],
         graphicId: 2971
     }),

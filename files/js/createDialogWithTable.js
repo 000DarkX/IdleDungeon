@@ -12,6 +12,9 @@ function createDialogWithTable(containerId, dialogTitle, data) {
     overlay.className = "overlay";
     overlay.id = "overlay";
 
+    const parent = document.createElement("div");
+    parent.className = "dialog-parent";
+
     // Create the dialog container
     const dialog = document.createElement("div");
     dialog.className = "dialog-container";
@@ -89,7 +92,8 @@ function createDialogWithTable(containerId, dialogTitle, data) {
     // Append elements to the dialog
     dialog.appendChild(closeButton);
     dialog.appendChild(header);
-    dialog.appendChild(table);
+    parent.appendChild(table);
+    dialog.appendChild(parent);
 
     // Append dialog and overlay to the container
     container.appendChild(overlay);
@@ -100,8 +104,9 @@ function createDialogWithTable(containerId, dialogTitle, data) {
         dialog.classList.add("show");
         overlay.classList.add("show");
     });*/
-    dialog.classList.add("show");
     overlay.classList.add("show");
+    dialog.classList.add("show");
+    
 
     // Close dialog when overlay is clicked
     overlay.addEventListener("click", () => {
@@ -111,12 +116,3 @@ function createDialogWithTable(containerId, dialogTitle, data) {
         //overlay.classList.remove("show");
     });
 }
-
-// Example usage
-/*const data = [
-    { image: "https://via.placeholder.com/50", name: "Item 1", amount: 10 },
-    { image: "https://via.placeholder.com/50", name: "Item 2", amount: 20 },
-    { image: "https://via.placeholder.com/50", name: "Item 3", amount: 30 }
-];
-
-createDialogWithTable("app", "Item Details", data);*/

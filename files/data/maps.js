@@ -63,7 +63,7 @@ class Dungeon extends GameMap {
         this.spawns[7] = ["grat", "stealthWorm"];
         this.spawns[8] = ["blueSlime", "blueSlimeII"];
         this.spawns[9] = ["combatDummy"];
-        this.spawns[10] = ["ant", "stealthWorm"];
+        this.spawns[10] = ["ant", "stealthWorm", "bat"];
 
         this.levelDetail = {};
 
@@ -78,7 +78,7 @@ class Dungeon extends GameMap {
     }
 
     click(e) {
-        if (this.target) {
+        if (this.target && hero.hasFeat("view-stats", 1)) {
             let data = ``;
             const target = this.target[0];
             data += `Name: ${target.name}\n`;
@@ -279,7 +279,14 @@ class Dungeon extends GameMap {
     }
 }
 
+class Dungeon2 extends GameMap {
+    constructor() {
+        super();
+    }
+}
+
 $maps = {
     guildHall: new GuildHall(),
-    dungeon: new Dungeon()
+    dungeon: new Dungeon(),
+    dungeon2: new Dungeon2()
 };

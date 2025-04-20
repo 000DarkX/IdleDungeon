@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Idle Dungeon v0.0.15</title>
+    <title>Idle Dungeon v0.0.16</title>
     <link rel="stylesheet" href="./files/css/dropdown.css">
     <link rel="stylesheet" href="./files/css/dialog.css">
     <style>
@@ -164,6 +164,8 @@
             <div onclick="javascript:map.load('guildHall')">Guild Hall</div>
             <div id="shopBtn" onclick="javascript:shop.show()">Shop</div>
             <div id="inventory" onclick="javascript: createDialogWithTable(undefined, 'Inventory', hero.items)">Inventory (0)</div>
+            <div id="stats" onclick="javascript: alert(hero.stats_to_string())">Stats</div>
+            <div style="display: none;" id="dungeon2Btn" onclick="javascript:map.load('dungeon2')">DungeonV2</div>
             <div onclick="javascript: openSettings()">Settings</div>
         </div>
     </main>
@@ -219,6 +221,10 @@
     <script src="./files/data/items.js"></script>
     <script src="./files/data/units.js"></script>
     <script>
+        function enableV2()
+        {
+            document.getElementById("dungeon2Btn").style.display = "inherit";
+        }
         function unlockAll() 
         {
             $maps.dungeon.unlocked = $settings.maxDungeonLevel;

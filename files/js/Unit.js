@@ -15,6 +15,9 @@ class Unit {
         this.potions     = 0;
         this.items       = {};
         this.buffs       = [];
+        this.stats       = {}; // basic stats like life,ac etc
+        this.addStat("agi", 0);
+        this.addStat("ac", 0);
         this.feats       = {}; // basic things
         this.x           = 0;
         this.y           = 0;
@@ -24,6 +27,44 @@ class Unit {
         this.updatedItems  = false;
         // add sight as buff
         this.alive = true;
+    }
+
+    stats_to_string() {
+        let result = "";
+        for (const name in this.stats) {
+            result += `${name}=${this.stats[name][0]}/${this.stats[name][1]+this.stats[name][2]}\n`;
+        }
+        return result;
+    }
+
+    addStat(name, value) {
+        return this.stats[name] = [value, value, 0];
+    }
+
+    getStat(name) {
+        if (name in this.stats)
+            return this.stats[name][0];
+        return 0;
+    }
+
+    hasStat(name, higher=1)
+    {
+        const f = this.stat[name];
+        return f && f[0] >= higher;
+    }
+
+    permStat(name, value)
+    {
+        if (!(name in this.stats)) {
+            this.stats[name] = [0,0,0];
+        }
+
+        this.stats[name][1] += value;
+        this.satts[name][0] += value;
+    }
+
+    addFeat(name, value) {
+        this.feats[name] = value;
     }
 
     improveFeat(name, value)
@@ -503,7 +544,7 @@ class Hero extends Unit {
     
     save() {
         const data = {};
-        const keys = ["team", "_life", "offense", "defense", "accessory", "items", "gold", "potions", "summons", "feats"];
+        const keys = ["team", "_life", "stats", "offense", "defense", "accessory", "items", "gold", "potions", "summons", "feats"];
         for (const key of keys) {
             data[key] = this[key];
         }

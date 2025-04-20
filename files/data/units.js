@@ -187,6 +187,9 @@ $units = {
         equipsOffense: ["gratClaw", "gratClaw", "gratClaw", "lbow"],
         equipsDefense: ["antArmor", "antArmor", "antArmor", "antArmor"],
         equipsAccessory: [],
+        stats: {
+            agi: [3,3,0],
+        },
         drop: [
             {itemId: "rock", chance: 20, amount: 1},
             {itemId: "stone", chance: 20, amount: 1},
@@ -201,6 +204,7 @@ $units = {
         equipsOffense: ["knife"],
         equipsDefense: ["silk"],
         equipsAccessory: [],
+        flying: true,
         drop: [
             {itemId: "rock", chance: 20, amount: 1},
             {itemId: "stone", chance: 5, amount: 1},
@@ -278,4 +282,38 @@ $units = {
             {itemId: "gold", chance: 100, amount: 5},
         ]
     }),
+    bat: new BasicEnemyUnit({
+        name: "Bat",
+        graphicId: 5057,
+        types: [],
+        life: [55, 55],
+        flying: true,
+        equipsOffense: ["magicStaff", "magicStaff", "magicStaff"],
+        equipsDefense: ["batRobeII", "batRobeII", "batRobeII", "batRobeII"],
+        equipsAccessory: [],
+        stats: {
+            agi: [3, 3, 0]
+        },
+        drop: [
+            {itemId: "permAgi", chance: 5, amount: 1},
+            {itemId: "batRobe", chance: 5, amount: 1},
+            {itemId: "magicStaff", chance: 5, amount: 1},
+            {itemId: "gold", chance: 100, amount: 8},
+        ]
+    }),
+};
+
+$unitTypes = {
+    bat: {
+        graphicIds: [5057, 4065, 5056],
+        base: {
+            name: "Bat",
+            unitInfo: ["magical"],
+            life: 15,
+            lifePerFloor: 5,
+            offense: [
+                {type: "magical", floorAdjust: 0}
+            ]
+        }
+    }
 };

@@ -63,7 +63,7 @@ class BasicDefense extends Defense {
     }
 
     defend(attacks, defender, attacker) {
-        const block = Chance.chance(this.ac + this.getBonus("ac"));
+        const block = Chance.chance(this.ac + this.getBonus("ac") + defender.getStat("ac"));
         if (block && defender == hero) {
             //const audio = new Audio(`files/assets/${this.defendSound || "armor-block.mp3"}`);
             //audio.play();
@@ -75,6 +75,17 @@ class BasicDefense extends Defense {
             defender.isKnockedDown = false;
         }
         let ratio    = block ? 0.5 : 1;
+        if (attacker.flying && !this.ranged) {
+            ratio *= 0.75;
+        }
+        // chance to flat out dodge (max chance 15%)
+        const agiRatio = 
+        Math.min(15, defender.getStat("agi") - attacker.getStat("agi"));
+    
+        if (Chance.chance(agiRatio)) {
+            return 0;
+        }
+
         let dmg = 0;
         const defenseTypes = ["blunt", "slash", "thrust"];
         const magicTypes   = ["magic", "arcane", "chaos"];
@@ -138,14 +149,27 @@ class BasicPotion extends Item {
         if (this.life != undefined && from.life[1] < this.lifeLimit) {
             from.updateStat("life", from.life[0] + 1, from.life[1] + 1);
             hero.update("items");
+        } 
+        
+        if (this.agi != undefined && !from.hasStat("agi", this.agiLimit)) {
+            from.permStat("agi", this.agi)
         }
     }
 }
 
+class BasicFeat extends Item {
+    use(from, map) {
+        from.addFeat(this.feat, this.featLevel);
+        from.give(this.itemId, -1);
+    }
+}
+
 $items = {
-    viewer: new Accessory({
+    viewer: new BasicFeat({
         graphicId: 1928,
         cost: 50,
+        feat: "view-stats",
+        featLevel: 1,
         sellable: false,
         name: "Viewer",
         desc: "Ability to see stats of your enemies"
@@ -156,6 +180,16 @@ $items = {
         sellable: false,
         name: "Small Life Potion",
         desc: "A life potion. heals by 25%"
+    }),
+    permAgi: new BasicPotion({
+        graphicId: 2702,
+        itemId: "permAgi",
+        sellable: false,
+        cost: 25,
+        agi: 1,
+        agiLimit: 15,
+        name: "Small Perm Agility Potion",
+        desc: "+1 perm agi up to 15"
     }),
     permLife: new BasicPotion({
         graphicId: 2713,
@@ -236,21 +270,43 @@ $items = {
         summonId: 0,
         graphicId: 2828
     }),
+    wshield:
+    new Accessory({
+        name: "Wooden Shield",
+        desc: `Wooden Shield. Improves block chance by 1%`,
+        cost: 50,
+        statBoost: {
+            ac: 1
+        },
+        defenseType: "armor",
+        graphicId: 2373
+    }),
 }
 
 $weapons = {
     sbow: new BasicAttack({
         name:"Short Bow",
-        desc: `A Short bow. Deals 3 piercing damage`,
+        desc: `A Short Bow. Deals 3 piercing damage`,
         cost: 50,
+        ranged: true,
         attacks: [{ damage: 3,
         damageType: "pierce" }],
         graphicId: 3166
     }),
+    magicStaff: new BasicAttack({
+        name:"Magic Staff",
+        desc: `Magic Staff. Deals 8 magic damage`,
+        cost: 1000,
+        ranged: true,
+        attacks: [{ damage: 8,
+        damageType: "magic" }],
+        graphicId: 2822
+    }),
     lbow: new BasicAttack({
         name:"Long Bow",
-        desc: `A Short bow. Deals 5 piercing damage`,
+        desc: `A Long Bow. Deals 5 piercing damage`,
         cost: 500,
+        ranged: true,
         attacks: [{ damage: 5,
         damageType: "pierce" }],
         graphicId: 3166
@@ -439,6 +495,28 @@ $armors = {
         mdefense: 1,
         defense: 0,
         ac: 1,
+        defenseType: "robe",
+        graphicId: 2309
+    }),
+    batRobe:
+    new BasicDefense({
+        name: "Bat Robe",
+        desc: `Bat Robe. 1% Chance to block for 1/2 damage and prevents 3 magical damage`,
+        cost: 200,
+        mdefense: 3,
+        defense: 0,
+        ac: 1,
+        defenseType: "robe",
+        graphicId: 2309
+    }),
+    batRobeII:
+    new BasicDefense({
+        name: "Bat Robe",
+        desc: `Bat Robe. 2% Chance to block for 1/2 damage and prevents 5 magical damage`,
+        cost: 1000,
+        mdefense: 5,
+        defense: 0,
+        ac: 2,
         defenseType: "robe",
         graphicId: 2309
     }),

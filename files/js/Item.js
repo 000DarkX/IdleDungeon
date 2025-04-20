@@ -18,6 +18,15 @@ class Item {
         if (this.life != undefined) {
             from.updateStat("life", from.life[0], from.life[1], from.life[2] - this.life);
         }
+
+        if (this.statBoost) {
+            if (this.stats == undefined) this.stats = {};
+
+            for (const name in this.statBoost) {
+                const boost = this.statBoost[name];
+                from.stats[name] -= boost;
+            }
+        }
     }
 
     equip(from, map, id) {
@@ -27,6 +36,15 @@ class Item {
 
         if (this.life != undefined) {
             from.updateStat("life", from.life[0], from.life[1], from.life[2] + this.life);
+        }
+
+        if (this.statBoost) {
+            if (this.stats == undefined) this.stats = {};
+
+            for (const name in this.statBoost) {
+                const boost = this.statBoost[name];
+                from.stats[name] += boost;
+            }
         }
     }
 

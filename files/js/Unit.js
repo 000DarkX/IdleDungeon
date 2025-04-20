@@ -1,9 +1,10 @@
 
 class Unit {
+
     constructor() {
         this.name = "Hero";
         this.graphicId   = 5063;
-        this.life        = [20, 20, 0];
+        this._life        = [20, 20, 0];
         //this.offenses    = new Array(4);
         //this.defenses    = new Array(4);
         //this.accesorries = new Array(4);
@@ -17,7 +18,30 @@ class Unit {
         this.y           = 0;
         this.graphicState = false;
         this.updateEquipped= false;
+        this.updatedItems  = false;
         this.alive = true;
+    }
+
+    update() {
+    }
+
+    updateStat(type, ...args)
+    {
+        for (let i = args.length; i < this[type].length; ++i)
+        {
+            args.push(this[type][i]);
+        }
+        this[type] = args;
+        return this[type];
+    }
+
+    set life(value) {
+        this._life = value;
+        this.update("life");
+    }
+
+    get life() {
+        return this._life;
     }
 
     fix() {
@@ -29,7 +53,7 @@ class Unit {
         }
         else if (this.life.length != 3) {
             while (this.life.length < 3) {
-                this.life.push(0);
+                this._life.push(0);
             }
         }
     }
@@ -50,21 +74,8 @@ class Unit {
         if (this[stat][0] > 0) {
             this.alive = true;
         }
-        this.update();
-    }
 
-    update() {
-        if (this == hero) {
-            document.getElementById("life").textContent = `Life ${this.life[0]+this.life[2]}/${this.life[1]+this.life[2]}`;
-            document.getElementById("potions").textContent = `Potions ${this.potions}`;
-            document.getElementById("gold").textContent = `Gold ${this.gold}`;
-            document.getElementById("location").textContent = `Location: ${map.name}`;
-            document.getElementById("dungeonBtn").textContent = `Dungeon (${typeof $maps != "undefined" ? $maps.dungeon.unlocked : 0})`;
-            document.getElementById("inventory").textContent = `Inventory (${this.itemCount()})`;
-            document.getElementById("offenses").textContent = `Offenses (${this.filterItemByType("offense").length})`;
-            document.getElementById("defenses").textContent = `Defenses (${this.filterItemByType("defense").length})`;
-            document.getElementById("accessorries").textContent = `Accessories (${this.filterItemByType("accessory").length})`;
-        }
+        this.update("life");
     }
 
     clone() {
@@ -78,24 +89,30 @@ class Unit {
 
     defeat() {
         this.alive = false;
+        const ev = new CustomEvent("Idle.defeat", {detail: {target: this}});
+        dispatchEvent(ev);
         if (this.team == "enemy") {
             map.defeat(this);
             //const audio = new Audio(`files/assets/combat-kill.mp3`);
             //audio.play();
         }
-        else if (this == hero) map = map.load("guildHall");
+        else if (this == hero) map.load("guildHall");
     }
 
     attack(targets)
     {
         if (this.alive == false) return;
+        if (this.isKnockedDown == true) {
+            this.isKnockedDown = false;
+            return;
+        }
         if (!Array.isArray(targets)) targets = [targets];
         const target = Chance.pick(targets);
         target.active = false;
-        const p = this.life[0] / this.life[1] * 100;
+        const p = this._life[0] / this._life[1] * 100;
 
-        if (p <= 50 && this.potions) {
-            this.potions -= 1;
+        if (p <= 50 && this.potions > 0) {
+            this.give("potions", -1);
             this.recoverPerc("life", 25);
             return;
         }
@@ -103,8 +120,11 @@ class Unit {
         const atkRoll = Chance.pick(this.offense);
         const defRoll = Chance.pick(target.defense);
 
-        if (atkRoll)
+        if (atkRoll) {
+            const ev = new CustomEvent("Idle.attacked", {detail: {targets, atkRoll, defRoll}});
+            dispatchEvent(ev);
             $items[atkRoll].attackTarget(this, target, $items[defRoll]);
+        }
         else if (this == hero) {
             //const audio = new Audio(`files/assets/combat-miss.mp3`);
             //audio.play();
@@ -167,6 +187,7 @@ class Unit {
     }
 
     _callEventGive(target, itemId, amount, bulk=false) {
+        this.updatedItems = true;
         const ev = new CustomEvent("Idle.give", {detail: {target, itemId, amount, bulk}});
         dispatchEvent(ev);
     }
@@ -240,6 +261,8 @@ class Unit {
             this.graphicState = true;
         }
         this.wasHit = false;
+        this.updateEquipped = false;
+        this.updatedItems   = false;
     }
 
     item(name) {
@@ -306,7 +329,6 @@ class Unit {
                     item.draw(canvas.getContext("2d"), sprites);
                 }
             }
-            this.updateEquipped = false;
         }
 
         const {row, col} = this.drawLocation();
@@ -342,13 +364,44 @@ class Hero extends Unit {
         addEventListener("Idle.give", e => {
             const detail = e.detail;
             if (detail.bulk == false)
-                this.update();
+                this.update("items");
         });
         addEventListener("Idle.unlock", e => {
-            this.update();
+            this.update("map");
+        });
+        addEventListener("Idle.mapLevelChanged", e => {
+            this.update("map");
         });
         addEventListener("Idle.mapload", e => {
-            this.update();
+            this.update("map");
         });
+        addEventListener("Idle.attacked", e => {
+            this.update("life");
+        });
+        /*addEventListener("Idle.defeat", e => {
+            if (e.target == hero)
+                this.update("");
+        });*/
+    }
+
+    update(type) {
+        if (this == hero) {
+            if (type == "life" || type == "all")
+                document.getElementById("life").textContent = `Life ${this.life[0]+this.life[2]}/${this.life[1]+this.life[2]}`;
+            
+            if (map.upatedLoad || type == "map" || type == "all")
+                document.getElementById("location").textContent = `Location: ${map.name}`;
+            
+            document.getElementById("dungeonBtn").textContent = `Dungeon (${typeof $maps != "undefined" ? $maps.dungeon.unlocked : 0})`;
+            
+            if (this.updateEquipped || this.updatedItems || type == "items" || type == "all") {
+                document.getElementById("potions").textContent = `Potions ${this.potions}`;
+                document.getElementById("gold").textContent = `Gold ${this.gold}`;
+                document.getElementById("inventory").textContent = `Inventory (${this.itemCount()})`;
+                document.getElementById("offenses").textContent = `Offenses (${this.filterItemByType("offense").length})`;
+                document.getElementById("defenses").textContent = `Defenses (${this.filterItemByType("defense").length})`;
+                document.getElementById("accessorries").textContent = `Accessories (${this.filterItemByType("accessory").length})`;
+            }
+        }
     }
 }

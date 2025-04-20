@@ -5,6 +5,7 @@ class GameMap {
     constructor() {
         this.tileId = 0;
         this._ticks = 0;
+        this.updatedLoad = true;
     }
 
     clone() {
@@ -21,6 +22,7 @@ class GameMap {
         cmap._ticks = 1;
         map = cmap;
 
+        this.updatedLoad = true;
         const ev = new CustomEvent("Idle.mapload", {detail: name});
         dispatchEvent(ev);
 
@@ -46,5 +48,6 @@ class GameMap {
 
     tick(t) {
         ++this._ticks;
+        this.updatedLoad = false;
     }
 }

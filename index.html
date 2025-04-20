@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Idle Dungeon v0.0.6</title>
+    <title>Idle Dungeon v0.0.8</title>
     <link rel="stylesheet" href="./files/css/dropdown.css">
     <link rel="stylesheet" href="./files/css/dialog.css">
     <style>
@@ -123,7 +123,7 @@
             </div>
             <div class="right-panel">
                 <div class="labels">
-                    <div id="location">Location: Guild Hall</div>
+                    <div id="location">Location: Unknown</div>
                     <div id="gold">Gold: 0</div>
                     <div id="potions">Potions: 0</div>
                     <div><span id="life">Life: 20 / 20</span> <a href="#" onclick="shop.buy('life')">Buy Life</a></div>
@@ -184,7 +184,7 @@
                     <summary>Debug</summary>
                     <button onclick="hero.give('gold', 100); hero.cheat= true;">Give Gold +100</button>
                     <button onclick="hero.give('potion', 10); hero.cheat=true;">Give Potion +10</button>
-                    <button onclick="hero.life[1] += 1; hero.life[0] += 1; hero.cheat=true;">Give Perm Life +1</button>
+                    <button onclick="hero.updateStat('life', hero.life[0] + 1, hero.life[1] + 1); hero.cheat=true;">Give Perm Life +1</button>
                     <button onclick="itemBundle1()">Item Bundle 1</button>
                 </details>
             </div>
@@ -194,8 +194,11 @@
         </div>
     </dialog>
     <script>
+        var hadError = false;
         onerror = e => {
-            prompt(e);
+            if (this.hadError) return;
+            this.hadError = true;
+            alert(e);
         };
     </script>
     <script src="./files/data/settings.js"></script>
@@ -256,56 +259,62 @@
         }
     </script>
     <script>
-        sprites = new SpriteSheet();
-        sprites.load("./files/assets/stone-soup.png");
-
         const canvas = document.getElementById("canvas");
         const ctx    = canvas.getContext("2d");
 
-        map  = new GuildHall();
-        map.load("guildHall");
-
-        hero = new Hero();
-        hero.newUnit();
-
+        sprites = new SpriteSheet();
+        map     = undefined;
+        hero    = undefined;
         $summons = [];
+        shop     = undefined;
 
-        shop = new Shop();
+        sprites.load("./files/assets/stone-soup.png").then(e => {
+            map  = new GuildHall();
+    
+            hero = new Hero();
+            hero.newUnit();
+
+            $summons = [];
+
+            shop = new Shop();
+
+            map.load("guildHall");
+
+            function draw(t) {
+                requestAnimationFrame(draw);
+
+                ctx.save();
+                ctx.scale(bound.clientWidth / 300, 1);
+                map.draw(ctx, sprites);
+                map.tick(t);
+
+                hero.draw(ctx, sprites);
+                hero.tick(t);
+
+                for (const summon of $summons) {
+                    if (summon) {
+                        summon.draw(ctx, sprites);
+                        summon.tick(t);
+                    }
+                }
+
+                shop.tick(t);
+                ctx.restore();
+            }
+
+            requestAnimationFrame(draw);
+        });
 
         const bound = document.querySelector(".left-panel");
         function resize(f) {
             //.getBoundingClientRect();
-            canvas.width = bound.clientWidth - (typeof f == "boolean" ? 42 : 0);
+            canvas.width = bound.clientWidth;
             canvas.height = bound.clientHeight;
         }
         onresize = resize;
         resize(true);
         document.getElementById("version").textContent = document.title;
         //addEventListener("load", () => setTimeout(resize.bind(this, true), 1500));
-        
-        function draw(t) {
-            requestAnimationFrame(draw);
-
-            ctx.save();
-            ctx.scale(bound.clientWidth / 300, 1);
-            map.draw(ctx, sprites);
-            map.tick(t);
-
-            hero.draw(ctx, sprites);
-            hero.tick(t);
-
-            for (const summon of $summons) {
-                if (summon) {
-                    summon.draw(ctx, sprites);
-                    summon.tick(t);
-                }
-            }
-
-            shop.tick(t);
-            ctx.restore();
-        }
-
-        requestAnimationFrame(draw);
     </script>
 </body>
 </html>

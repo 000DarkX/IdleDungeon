@@ -16,7 +16,7 @@ class Item {
         }
 
         if (this.life != undefined) {
-            from.life[2] -= this.life;
+            from.updateStat("life", from.life[0], from.life[1], from.life[2] - this.life);
         }
     }
 
@@ -26,12 +26,13 @@ class Item {
             ele.title = this.desc;
 
         if (this.life != undefined) {
-            from.life[2] += this.life;
+            from.updateStat("life", from.life[0], from.life[1], from.life[2] + this.life);
         }
     }
 
     use(hero, map) {
-
+        const ev = new CustomEvent("Idle.use", {detail: {target: hero, map: map}});
+        dispatchEvent(ev);
     }
 
     draw(ctx, sprites) {

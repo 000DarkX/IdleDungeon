@@ -22,6 +22,9 @@ class GuildHall extends GameMap {
         if (Chance.int(1, 1000) == 1) {
             hero.give("potion", 1);
         }
+        if (Chance.int(1, 10_000) == 1) {
+            hero.give(Chance.pick(Object.keys($specialItems)), 1);
+        }
         ++this._ticks;
     }
 }
@@ -40,6 +43,7 @@ class Dungeon extends GameMap {
         this.spawns[2] = [ "rat", "worm", "wasp"];
         this.spawns[3] = ["sheep", "wasp"];
         this.spawns[4] = ["ratII", "snake", "wasp", "rare1"];
+        this.spawns[5] = ["frog", "ratII", "snake", "wasp"];
 
         this.levelDetail = {};
 
@@ -116,10 +120,15 @@ class Dungeon extends GameMap {
 
     set level(value) {
         this.#level = value;
+        if (this.#level > $settings.maxDungeonLevel) {
+            this.#level = $settings.maxDungeonLevel;
+        }
         this.name   = `Dungeon (${this.#level})`;
         if (this.levelDetail[this.level] == undefined) {
             this.createLevel(this.level);
         }
+        const ev = new CustomEvent("Idle.mapLevelChanged", {detail: {map: this}});
+        dispatchEvent(ev);
     }
 
     spawnRandom()

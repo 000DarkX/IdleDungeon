@@ -175,8 +175,8 @@ class Shop {
                              hero.life[1] < 35 ? hero.life[1] * 200 : Infinity;
                 const c = confirm(`Buy life for ${cost}G`);
                 if (c && hero.gold >= cost) {
-                    hero.life[0] += 1;
-                    hero.life[1] += 1;
+                    hero.updateStat("life", hero.life[0]+1, hero.life[1]+1);
+                    hero.give("gold", cost);
                 }
             break;
         }

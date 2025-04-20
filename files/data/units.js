@@ -66,7 +66,7 @@ $units = {
         graphicLayers: [
             3737
         ],
-        equipsOffense: ["rock", "rock"],
+        equipsOffense: ["stone", "rock"],
         equipsDefense: ["cloth"],
         equipsAccessory: [],
         drop: [
@@ -109,7 +109,7 @@ $units = {
         name: "Sheep",
         graphicId: 4163,
         life: [40, 40],
-        equipsOffense: ["rock", "rock"],
+        equipsOffense: ["stone", "rock"],
         equipsDefense: ["silk"],
         equipsAccessory: [],
         drop: [
@@ -146,5 +146,18 @@ $units = {
             {itemId: "ratStaff", chance: 5, amount: 1},
             {itemId: "ratStaff2", chance: 5, amount: 1},
         ]
-    })
+    }),
+    frog: new BasicEnemyUnit({
+        name: "Green Frog",
+        graphicId: 4072,
+        types: ["nature", "poisonous"],
+        life: [35, 35],
+        equipsOffense: ["hstone", "hstone", "hstone"],
+        equipsDefense: ["snakeScale", "silk"],
+        equipsAccessory: [],
+        drop: [
+            {itemId: "hstone", chance: 5, amount: 1},
+            {itemId: "gold", chance: 100, amount: 5},
+        ]
+    }),
 };

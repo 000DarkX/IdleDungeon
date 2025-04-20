@@ -15,6 +15,16 @@ class BasicAttack extends Offense {
     }
 
     attackTarget(attacker, defender, defenseRoll) {
+        
+        if (attacker.delay > 0) {
+            --attacker.delay;
+            return;
+        }
+
+        if (this.delay) {
+            attacker.delay = this.delay;   
+        }
+
         const dmg = defenseRoll ? defenseRoll.defend(this.attacks, defender, attacker) : this.calcDmg();
 
         if (dmg > 0) {
@@ -25,11 +35,10 @@ class BasicAttack extends Offense {
             }
         }
 
-        defender.life[0] -= dmg;
+        defender.updateStat("life", defender.life[0] - dmg);
         if (defender.life[0] + defender.life[2] <= 0) {
             defender.defeat(attacker);
         }
-        defender.update();
     }
 }
 
@@ -40,11 +49,35 @@ class BasicDefense extends Defense {
         Object.assign(this, obj);
     }
 
+    getBonus(type) {
+
+        let result = 0;
+
+        if (this.types) {
+            for (const type  of this.types) {
+                const bonus = this.bonus[type];
+                if (bonus) {
+                    const v = bonus[type];
+                    if (v)
+                        result += v;
+                }
+            }
+        }
+        
+        return result;
+    }
+
     defend(attacks, defender, attacker) {
-        const block = Chance.chance(this.ac);
+        const block = Chance.chance(this.ac + this.getBonus("ac"));
         if (block && defender == hero) {
             //const audio = new Audio(`files/assets/${this.defendSound || "armor-block.mp3"}`);
             //audio.play();
+        }
+        const kd     = Chance.chance(this.knockdown + this.getBonus("knockdown"));
+        if (kd) {
+            defender.isKnockedDown = true;
+        } else {
+            defender.isKnockedDown = false;
         }
         let ratio    = block ? 0.5 : 1;
         let dmg = 0;
@@ -98,8 +131,7 @@ class BasicPotion extends Item {
     use(from, map) {
         this.give(this.itemId, -1);
         if (this.life != undefined && from.life[1] < this.lifeLimit) {
-            from.life[0] += 1;
-            from.life[1] += 1;
+            from.updateStat("life", from.life[0] + 1, from.life[1] + 1);
         }
     }
 }
@@ -120,12 +152,6 @@ $items = {
         name: "Small Perm Life Potion",
         desc: "+1 perm life up to 25"
     }),
-    stuffedAnimal: new Item({
-        graphicId: 6039,
-        cost: 50,
-        name: "Stuffed Animal",
-        desc: "A stuffed animal! only for looks!"
-    }), 
     amuletOfLife: new Accessory({
         graphicId: 2259,
         cost: 50,
@@ -133,6 +159,13 @@ $items = {
         life: 5,
         desc: "Red amulet. Gives you 5 life."
     }),    
+    amuletOfLifeII: new Accessory({
+        graphicId: 2259,
+        cost: 150,
+        name: "Amulet of Life II",
+        life: 10,
+        desc: "Red amulet. Gives you 10 life."
+    }),   
     ratStaff: new BasicSummon({
         name: "Rat Staff",
         desc: `Summons a Rat! For 1st slot!`,
@@ -172,10 +205,37 @@ $weapons = {
         }],
         graphicId: 3187
     }),
+    hvstone: new BasicAttack({
+        name: "Heavy Stone",
+        desc: `A stone. Deals 5 blunt damage. Delay 1`,
+        cost: 75,
+        attacks: [{
+            damage: 5,
+            damageType: "blunt",
+        }],
+        delay: 1,
+        graphicId: 3172
+    }),
+    hstone: new BasicAttack({
+        name: "Headache Stone",
+        desc: `A stone. Deals 3 blunt damage. knockdown 1%.`,
+        cost: 35,
+        knockdown: 1,
+        bonus: {
+            nature: {
+                knockdown: 14
+            }
+        },
+        attacks: [{
+            damage: 3,
+            damageType: "blunt",
+        }],
+        graphicId: 3184
+    }),
     wormBite: new BasicAttack({
         name: "Worm Staff",
         desc: `Deals 1 Magic Damage`,
-        cost: 2828,
+        cost: 35,
         shop: false,
         attacks: [{ damage: 1,
         damageType: "magic" }],
@@ -252,5 +312,15 @@ $armors = {
     }),
 }
 
+$specialItems = {
+    stuffedAnimal: new Item({
+        graphicId: 6039,
+        cost: 50,
+        name: "Stuffed Animal",
+        desc: "A stuffed animal! only for looks!"
+    }), 
+};
+
 Object.assign($items, $weapons);
 Object.assign($items, $armors);
+Object.assign($items, $specialItems);

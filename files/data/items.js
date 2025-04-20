@@ -20,13 +20,13 @@ class BasicAttack extends Offense {
         if (dmg > 0) {
             defender.wasHit = true;
             if (attacker == hero) {
-                const audio = new Audio(`files/assets/${this.hitSound || "combat-hit-melee.mp3"}`);
-                audio.play();
+                //const audio = new Audio(`files/assets/${this.hitSound || "combat-hit-melee.mp3"}`);
+                //audio.play();
             }
         }
 
         defender.life[0] -= dmg;
-        if (defender.life[0] <= 0) {
+        if (defender.life[0] + defender.life[2] <= 0) {
             defender.defeat(attacker);
         }
         defender.update();
@@ -43,8 +43,8 @@ class BasicDefense extends Defense {
     defend(attacks, defender, attacker) {
         const block = Chance.chance(this.ac);
         if (block && defender == hero) {
-            const audio = new Audio(`files/assets/${this.defendSound || "armor-block.mp3"}`);
-            audio.play();
+            //const audio = new Audio(`files/assets/${this.defendSound || "armor-block.mp3"}`);
+            //audio.play();
         }
         let ratio    = block ? 0.5 : 1;
         let dmg = 0;
@@ -94,19 +94,45 @@ class BasicSummon extends Accessory {
     }
 }
 
+class BasicPotion extends Item {
+    use(from, map) {
+        this.give(this.itemId, -1);
+        if (this.life != undefined && from.life[1] < this.lifeLimit) {
+            from.life[0] += 1;
+            from.life[1] += 1;
+        }
+    }
+}
+
 $items = {
     potions: new Item({
         graphicId: 2713,
-        cost: 50,
+        cost: 25,
         name: "Small Life Potion",
         desc: "A life potion. heals by 25%"
+    }),
+    permLife: new Item({
+        graphicId: 2713,
+        itemId: "permLife",
+        cost: 30,
+        life: 1,
+        lifeLimit: 25,
+        name: "Small Perm Life Potion",
+        desc: "+1 perm life up to 25"
     }),
     stuffedAnimal: new Item({
         graphicId: 6039,
         cost: 50,
         name: "Stuffed Animal",
         desc: "A stuffed animal! only for looks!"
-    }),   
+    }), 
+    amuletOfLife: new Accessory({
+        graphicId: 2259,
+        cost: 50,
+        name: "Amulet of Life",
+        life: 5,
+        desc: "Red amulet. Gives you 5 life."
+    }),    
     ratStaff: new BasicSummon({
         name: "Rat Staff",
         desc: `Summons a Rat! For 1st slot!`,

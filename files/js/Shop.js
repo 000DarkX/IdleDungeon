@@ -128,6 +128,8 @@ class Shop {
                 if (hero.gold >= item.cost) {
                     hero.give("gold", -item.cost);
                     hero.give(id, 1);
+                    //if (item.type == "item")
+                    //    item.use(hero, map);
                     this.items.splice(i, 1);
                     row.remove();
                 }
@@ -163,6 +165,21 @@ class Shop {
 
         this.overlay = overlay;
         this.parent = dialog;
+    }
+
+    buy(type) {
+        switch (type) {
+            case "life":
+                const cost = hero.life[1] < 25 ? hero.life[1] * 5 : 
+                             hero.life[1] < 30 ? hero.life[1] * 100 : 
+                             hero.life[1] < 35 ? hero.life[1] * 200 : Infinity;
+                const c = confirm(`Buy life for ${cost}G`);
+                if (c && hero.gold >= cost) {
+                    hero.life[0] += 1;
+                    hero.life[1] += 1;
+                }
+            break;
+        }
     }
 
     refresh() {

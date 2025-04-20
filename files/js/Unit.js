@@ -3,7 +3,7 @@ class Unit {
     constructor() {
         this.name = "Hero";
         this.graphicId   = 5063;
-        this.life        = [20, 20];
+        this.life        = [20, 20, 0];
         //this.offenses    = new Array(4);
         //this.defenses    = new Array(4);
         //this.accesorries = new Array(4);
@@ -18,6 +18,20 @@ class Unit {
         this.graphicState = false;
         this.updateEquipped= false;
         this.alive = true;
+    }
+
+    fix() {
+        if (this.life == undefined) {
+            throw new Error("life is undefined");
+        }
+        if (!Array.isArray(this.life)) {
+            this.life = [this.life, this.life, 0];
+        }
+        else if (this.life.length != 3) {
+            while (this.life.length < 3) {
+                this.life.push(0);
+            }
+        }
     }
 
     recoverPerc(stat, value)
@@ -41,7 +55,7 @@ class Unit {
 
     update() {
         if (this == hero) {
-            document.getElementById("life").textContent = `Life ${this.life[0]}/${this.life[1]}`;
+            document.getElementById("life").textContent = `Life ${this.life[0]+this.life[2]}/${this.life[1]+this.life[2]}`;
             document.getElementById("potions").textContent = `Potions ${this.potions}`;
             document.getElementById("gold").textContent = `Gold ${this.gold}`;
             document.getElementById("location").textContent = `Location: ${map.name}`;
@@ -66,14 +80,15 @@ class Unit {
         this.alive = false;
         if (this.team == "enemy") {
             map.defeat(this);
-            const audio = new Audio(`files/assets/combat-kill.mp3`);
-            audio.play();
+            //const audio = new Audio(`files/assets/combat-kill.mp3`);
+            //audio.play();
         }
         else if (this == hero) map = map.load("guildHall");
     }
 
     attack(targets)
     {
+        if (this.alive == false) return;
         if (!Array.isArray(targets)) targets = [targets];
         const target = Chance.pick(targets);
         target.active = false;
@@ -91,8 +106,8 @@ class Unit {
         if (atkRoll)
             $items[atkRoll].attackTarget(this, target, $items[defRoll]);
         else if (this == hero) {
-            const audio = new Audio(`files/assets/combat-miss.mp3`);
-            audio.play();
+            //const audio = new Audio(`files/assets/combat-miss.mp3`);
+            //audio.play();
         }
     }
 
@@ -156,7 +171,7 @@ class Unit {
         dispatchEvent(ev);
     }
 
-    give(itemId, amount, bulk=false) {
+    give(itemId, amount=1, bulk=false) {
         if (Array.isArray(itemId)) {
             let idx = 0;
             for (const item of itemId) {

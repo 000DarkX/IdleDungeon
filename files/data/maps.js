@@ -15,7 +15,7 @@ class GuildHall extends GameMap {
     }
 
     tick(t) {
-        if (this._ticks % 200 == 0)
+        if (this._ticks % $settings.recoverTick == 0)
         {
             hero.recoverPerc("life", 25);
         }

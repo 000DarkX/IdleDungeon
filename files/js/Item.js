@@ -14,12 +14,20 @@ class Item {
         {
             ele.getContext("2d").clearRect(0, 0, ele.clientWidth, ele.clientHeight);
         }
+
+        if (this.life != undefined) {
+            from.life[2] -= this.life;
+        }
     }
 
     equip(from, map, id) {
         const ele = document.getElementById(`${this.type}${id}`);
         if (ele && from.team == "good")
             ele.title = this.desc;
+
+        if (this.life != undefined) {
+            from.life[2] += this.life;
+        }
     }
 
     use(hero, map) {
@@ -33,8 +41,9 @@ class Item {
 }
 
 class Offense extends Item {
-    constructor() {
+    constructor(obj) {
         super();
+        Object.assign(this, obj);
         this.type = "offense";
     }
     attackTarget(a,b,c) {
@@ -44,8 +53,9 @@ class Offense extends Item {
 
 
 class Defense extends Item {
-    constructor() {
+    constructor(obj) {
         super();
+        Object.assign(this, obj);
         this.type = "defense";
     }
 
@@ -56,8 +66,9 @@ class Defense extends Item {
 
 
 class Accessory extends Item {
-    constructor() {
+    constructor(obj) {
         super();
+        Object.assign(this, obj);
         this.type = "accessory";
     }
 }

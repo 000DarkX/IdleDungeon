@@ -5,4 +5,5 @@ $settings = {
     spawnTick: 100, // default 100 (how long to wait till enemy spawns)
     attackTick: 10, // default 10 (how long to wait till you can attack)
     maxDungeonLevel: 4,
+    recoverTick: 200,
 }

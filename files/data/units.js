@@ -4,6 +4,7 @@ class BasicEnemyUnit extends Unit
     constructor(obj) {
         super();
         Object.assign(this, obj);
+        this.fix();
         this.team = "enemy";
     }
 
@@ -137,7 +138,7 @@ $units = {
         name: "Rare 1",
         graphicId: 2619,
         life: [35, 35],
-        runChance: 20,
+        runChance: 10,
         equipsOffense: [],
         equipsDefense: [],
         equipsAccessory: [],

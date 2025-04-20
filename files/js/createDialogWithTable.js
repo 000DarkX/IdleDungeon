@@ -42,7 +42,7 @@ function createDialogWithTable(containerId, dialogTitle, data) {
     // Create the table header
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
-    ["Image", "Name", "Amount"].forEach((col) => {
+    ["Image", "Name", "Amount", "Actions"].forEach((col) => {
         const th = document.createElement("th");
         th.className = "th";
         th.textContent = col;
@@ -83,6 +83,18 @@ function createDialogWithTable(containerId, dialogTitle, data) {
         amountCell.className = "td";
         amountCell.textContent = dat.amount;
         row.appendChild(amountCell);
+
+        const actionCell = document.createElement("td");
+        actionCell.className = "td";
+        const useBtn  = document.createElement("button");
+        useBtn.textContent = "Use";
+        useBtn.onclick = e => {
+            if (dat.amount > 0) {
+                item.use(hero, map);
+            }
+        };
+        actionCell.appendChild(useBtn);
+        row.appendChild(actionCell);
 
         tbody.appendChild(row);
         ++idx;

@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Idle Dungeon v0.0.3</title>
+    <title>Idle Dungeon v0.0.6</title>
     <link rel="stylesheet" href="./files/css/dropdown.css">
     <link rel="stylesheet" href="./files/css/dialog.css">
     <style>
+        button {
+            padding: 5px;
+        }
         body {
             user-select: none;
             font-family: Arial, sans-serif;
@@ -21,7 +24,7 @@
         main {
             border: 2px solid #000;
             background-color: #fff;
-            padding: 20px;
+            padding: 1%; /* 20px */
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
         }
 
@@ -30,10 +33,10 @@
             flex-direction: row;
         }
         .left-panel {
-            width: 300px;
+            width: 50%; /* 300px */
             height: 400px;
             border: 2px solid #000;
-            margin-right: 20px;
+            margin-right: 1%; /* 20px */
             position: relative;
         }
         .right-panel {
@@ -42,68 +45,74 @@
             justify-content: space-between;
         }
         .labels div {
-            margin-bottom: 10px;
+            margin-bottom: 0.5%; /* 10px */
             font-weight: bold;
         }
         .stats {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 40px; /* Increased space between stats and actions */
-}
+            display: flex;
+            flex-direction: column;
+            gap: 0.5%; /* 10px */
+            margin-bottom: 40px; /* Increased space between stats and actions */
+        }
 
-.row {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
+        .row {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
 
-.label {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
+        .label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
 
-.stats-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 columns */
-    gap: 10px; /* Space between the boxes */
-}
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 columns */
+            gap: 0.5%; /* Space between the boxes 10px */
+        }
 
-.stats-row div {
-    width: 50px;
-    height: 50px;
-    border: 1px solid black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 14px;
-    font-weight: bold;
-    background-color: #ccc;
-}
+        .stats-row div {
+            width: 48px; /* 50px */
+            height: 48px;
+            border: 1px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            font-weight: bold;
+            background-color: #ccc;
+        }
 
-.actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 20px; /* Ensure proper spacing */
-}
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5%; /* 10px */
+            margin-top: 1%; /* Ensure proper spacing  20px */
+        }
 
-.actions div {
-    width: 100px;
-    height: 50px;
-    border: 2px solid black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 16px;
-    font-weight: bold;
-    background-color: #ddd;
-    cursor: pointer;
-}
+        .actions div {
+            width: 100px;
+            height: 50px;
+            border: 2px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #ddd;
+            cursor: pointer;
+        }
 
-.stats-row div {
-    position: relative;
-}
+        .stats-row div {
+            position: relative;
+        }
+
+        #version  {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
     </style>
 </head>
 <body>
@@ -117,7 +126,7 @@
                     <div id="location">Location: Guild Hall</div>
                     <div id="gold">Gold: 0</div>
                     <div id="potions">Potions: 0</div>
-                    <div id="life">Life: 20 / 20</div>
+                    <div><span id="life">Life: 20 / 20</span> <a href="#" onclick="shop.buy('life')">Buy Life</a></div>
                 </div>
                 <div class="stats">
                     <div class="row">
@@ -155,9 +164,40 @@
             <div onclick="javascript:map.load('guildHall')">Guild Hall</div>
             <div id="shopBtn" onclick="javascript:shop.show()">Shop</div>
             <div id="inventory" onclick="javascript: createDialogWithTable(undefined, 'Inventory', hero.items)">Inventory (0)</div>
+            <div onclick="javascript: openSettings()">Settings</div>
         </div>
     </main>
-    
+    <small id="version">v0.0.5</small>
+    <dialog id="settings" popover class="dialog-container">
+        <div class="label">Settings</div>
+        <div class="">
+            <div>
+                <details>
+                    <summary>Speed</summary>
+                    <input type="radio" name="group1" checked onclick="javascript:$settings.attackTick = 10; $settings.spawnTick = 100; $settings.recoverTick = 200;">
+                    <input type="radio" name="group1" onclick="javascript:$settings.attackTick = 5; $settings.spawnTick = 50; $settings.recoverTick = 100;">
+                    <input type="radio" name="group1" onclick="javascript:$settings.attackTick = 2.5; $settings.spawnTick = 25; $settings.recoverTick = 50;">
+                </details>
+            </div>
+            <div>
+                <details>
+                    <summary>Debug</summary>
+                    <button onclick="hero.give('gold', 100); hero.cheat= true;">Give Gold +100</button>
+                    <button onclick="hero.give('potion', 10); hero.cheat=true;">Give Potion +10</button>
+                    <button onclick="hero.life[1] += 1; hero.life[0] += 1; hero.cheat=true;">Give Perm Life +1</button>
+                    <button onclick="itemBundle1()">Item Bundle 1</button>
+                </details>
+            </div>
+            <div>
+                <button onclick="javascript:resize()">Resize</button>
+            </div>
+        </div>
+    </dialog>
+    <script>
+        onerror = e => {
+            prompt(e);
+        };
+    </script>
     <script src="./files/data/settings.js"></script>
     <script src="./files/js/dropdown.js"></script>
     <script src="./files/js/createDialogWithTable.js"></script>
@@ -171,6 +211,34 @@
     <script src="./files/data/items.js"></script>
     <script src="./files/data/units.js"></script>
     <script>
+        function itemBundle1() {
+            hero.cheat = true;
+            hero.give("wool");
+            hero.give("cloth");
+            hero.give("knife");
+            hero.give("ratStaff");
+            hero.give("ratStaff2");
+            hero.give("snakeScale");
+            hero.give("silk");
+        }
+    </script>
+    <script>
+        function openSettings() {
+            const dialog = document.getElementById("settings");
+            const clone  = dialog.cloneNode(true);
+            clone.classList.add("dialog-container");
+            clone.style.display = "block";
+            const overlay = document.createElement("overlay");
+            overlay.className ="overlay";
+            overlay.classList.add("show");
+            overlay.onclick = e => {
+                clone.remove();
+                overlay.remove();
+            };
+
+            document.body.appendChild(overlay);
+            document.body.appendChild(clone);
+        }
         function formatDuration(seconds) {
             const hours = Math.floor(seconds / 3600);
             const minutes = Math.floor((seconds % 3600) / 60);
@@ -178,7 +246,13 @@
 
             const format = (num) => String(parseInt(num)).padStart(2, "0");
 
-            return `${format(hours)}:${format(minutes)}:${format(secs)}`;
+            return `${hours <= 0 ? "" : format(hours)+":"}${minutes <= 0 ? "" : format(minutes)+":"}${format(secs)}`;
+        }
+
+        function detectMobileDevice() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isMobile = /android|webos|iphone|ipad|ipod|blackberry|windows phone/.test(userAgent);
+            return isMobile;
         }
     </script>
     <script>
@@ -198,13 +272,22 @@
 
         shop = new Shop();
 
-        const bound = document.querySelector(".left-panel").getBoundingClientRect();
-        canvas.width = bound.width;
-        canvas.height = bound.height;
-
+        const bound = document.querySelector(".left-panel");
+        function resize(f) {
+            //.getBoundingClientRect();
+            canvas.width = bound.clientWidth - (typeof f == "boolean" ? 42 : 0);
+            canvas.height = bound.clientHeight;
+        }
+        onresize = resize;
+        resize(true);
+        document.getElementById("version").textContent = document.title;
+        //addEventListener("load", () => setTimeout(resize.bind(this, true), 1500));
+        
         function draw(t) {
             requestAnimationFrame(draw);
 
+            ctx.save();
+            ctx.scale(bound.clientWidth / 300, 1);
             map.draw(ctx, sprites);
             map.tick(t);
 
@@ -219,18 +302,10 @@
             }
 
             shop.tick(t);
+            ctx.restore();
         }
 
         requestAnimationFrame(draw);
-
-
-        /*const images = [
-            { image: "https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg", label: "India" },
-            { image: "https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg", label: "USA" },
-            { image: "https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg", label: "England" },
-            { image: "https://upload.wikimedia.org/wikipedia/en/0/05/Flag_of_Brazil.svg", label: "Brazil" }
-        ];
-        createImageDropdown(document.body, images);*/
     </script>
 </body>
 </html>

@@ -156,6 +156,15 @@ class Unit {
             console.info("no targets");
             return;
         }
+
+        for (let i =0 ; i < targets.length; ++i) {
+            const tar = targets[i];
+            if (tar == undefined || tar.alive == false) {
+                targets.splice(i, 1);
+                --i;
+            }
+        }
+
         const target = Chance.pick(targets);
         target.active = false;
         const p = this._life[0] / (this._life[1]+(this._life[2]||0)) * 100;
@@ -379,7 +388,7 @@ class Unit {
         if (this.alive == false) {
             const {row, col} = this.drawLocation();
 
-            sprites.drawByID(ctx, 3278, this.x + col * 32, this.y + row * 32, 32, 32);
+            sprites.drawByID(ctx, 3278, col * 32, row * 32, 32, 32);
             return;
         }
 

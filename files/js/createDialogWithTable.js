@@ -102,7 +102,7 @@ function createDialogWithTable(containerId, dialogTitle, data) {
             sellBtn.onclick = e => {
                 if (dat.amount > 0) {
                     hero.sell(id);
-                    amountCell.textContent = dat.amount;
+                    amountCell.textContent = hero.items[id].amount;
                 }
             };
             actionCell.appendChild(sellBtn);

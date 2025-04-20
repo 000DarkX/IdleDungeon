@@ -31,7 +31,7 @@ class BasicAttack extends Offense {
         }
 
         defender.updateStat("life", defender.life[0] - dmg);
-        if (defender.life[0] + defender.life[2] <= 0) {
+        if (defender.life[0] <= 0) {
             defender.defeat(attacker);
         }
     }
@@ -79,18 +79,27 @@ class BasicDefense extends Defense {
         const defenseTypes = ["blunt", "slash", "thrust"];
         const magicTypes   = ["magic", "arcane", "chaos"];
         for (const atk of attacks) {
+            var found = false;
             if (defenseTypes.indexOf(atk.damageType) != -1) {
                 const d = atk.damage - (this.defense||0);
-                if (d > 0)
+                if (d > 0) {
                     dmg += d;
-            } else if (magicTypes.indexOf(atk.damageType) != -1) {
+                    found = true;
+                }
+            } 
+            if (magicTypes.indexOf(atk.damageType) != -1) {
                 const d = atk.damage - (this.mdefense||0);
-                if (d > 0)
+                if (d > 0) {
                     dmg += d;
-            } else if (atk.damageType in this.protections) {
+                    found = true;
+                }
+            } 
+            if (atk.damageType in this.protections) {
                 const d = atk.damage - (this.protections[atk.damageType]||0);
                 if (d > 0)
                     dmg += d;
+            } else if (!found) {
+                dmg += atk.damage;
             }
         }
         return dmg * ratio;
@@ -134,6 +143,13 @@ class BasicPotion extends Item {
 }
 
 $items = {
+    viewer: new Accessory({
+        graphicId: 1928,
+        cost: 50,
+        sellable: false,
+        name: "Viewer",
+        desc: "Ability to see stats of your enemies"
+    }),
     potions: new Item({
         graphicId: 2713,
         cost: 25,
@@ -342,7 +358,7 @@ $weapons = {
                 damageType: "slash",
             },
             {
-                damgae: 3,
+                damage: 3,
                 damageType: "ice"
             }
         ],
@@ -358,7 +374,7 @@ $weapons = {
                 damageType: "slash",
             },
             {
-                damgae: 5,
+                damage: 5,
                 damageType: "ice"
             }
         ],

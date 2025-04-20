@@ -131,7 +131,7 @@ $units = {
         name: "Blue Slime",
         graphicId: 3999,
         life: [45, 45],
-        equipsOffense: ["icicleKnife"],
+        equipsOffense: ["icicleKnife", "icicleKnife"],
         equipsDefense: ["icedJelly", "icedJelly", "leather", "leather"],
         equipsAccessory: [],
         drop: [

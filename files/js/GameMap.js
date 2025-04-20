@@ -35,6 +35,10 @@ class GameMap {
         this._ticks = 1;
     }
 
+    click(e) {
+        
+    }
+
     draw(ctx, spites)
     {
         if (spites.image == undefined) return;

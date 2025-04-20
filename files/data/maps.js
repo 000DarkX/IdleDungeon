@@ -77,6 +77,19 @@ class Dungeon extends GameMap {
         return `Dungeon (${this.#level})`;
     }
 
+    click(e) {
+        if (this.target) {
+            let data = ``;
+            const target = this.target[0];
+            data += `Name: ${target.name}\n`;
+            data += `Life: ${target.life[1]}\n`;
+            data += `Off: ${target.offense}\n`;
+            data += `Def: ${target.defense}\n`;
+            data += `Acc: ${target.accessory}\n`;
+            alert(data);
+        }
+    }
+
     saveState() {
         const data = {level: this.#level};
         const keys = ["unlocked"];
@@ -238,7 +251,7 @@ class Dungeon extends GameMap {
                     hero.active = false;
                     const list  = [hero];
                     for (const summon of $summons) {
-                        if (summon) list.push(summon);
+                        if (summon && summon.alive != false) list.push(summon);
                     }
                     let left = [];
                     for (const target of this.target) {

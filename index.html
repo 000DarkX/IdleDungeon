@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Idle Dungeon v0.0.10</title>
+    <title>Idle Dungeon v0.0.11</title>
     <link rel="stylesheet" href="./files/css/dropdown.css">
     <link rel="stylesheet" href="./files/css/dialog.css">
     <style>
@@ -305,13 +305,15 @@
                 hero.draw(ctx, sprites);
                 hero.tick(t);
 
-                for (const summon of $summons) {
-                    if (summon) {
-                        summon.draw(ctx, sprites);
-                        summon.tick(t);
+                if (Array.isArray($summons)) {
+                    for (const summon of $summons) {
+                        if (summon) {
+                            summon.draw(ctx, sprites);
+                            summon.tick(t);
+                        }
                     }
                 }
-
+            
                 shop.tick(t);
                 ctx.restore();
             }

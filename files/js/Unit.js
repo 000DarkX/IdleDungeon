@@ -69,7 +69,7 @@ class Unit {
 
     recoverPerc(stat, value)
     {
-        const v = this[stat][1] * (value / 100);
+        const v = (this[stat][1] + (this[stat][2]||0)) * (value / 100);
         this.recover(stat, v);
     }
 
@@ -118,7 +118,7 @@ class Unit {
         if (!Array.isArray(targets)) targets = [targets];
         const target = Chance.pick(targets);
         target.active = false;
-        const p = this._life[0] / this._life[1] * 100;
+        const p = this._life[0] / (this._life[1]+(this._life[2]||0)) * 100;
 
         if (p <= 50 && this.potions > 0) {
             this.give("potions", -1);
@@ -422,6 +422,7 @@ class Hero extends Unit {
             const ctx = canvas.getContext("2d");
             const item = $items[itemId];
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvas.title = item.desc;
             sprites.drawByID(ctx, item.graphicId, 0, 0, canvas.width, canvas.height);
         }
     }

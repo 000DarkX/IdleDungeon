@@ -74,11 +74,19 @@ class Dungeon extends GameMap {
     }
 
     saveState() {
-        localStorage.setItem("Idle.dungeon", this.#level);
+        const data = {level: this.#level};
+        const keys = ["unlocked"];
+        for (const key of keys) {
+            data[key] = this[key];
+        }
+        localStorage.setItem("Idle.dungeon", JSON.stringify(data));
     }
 
     loadState() {
-        this.#level = localStorage.getItem("Idle.dungeon") || 1;
+        const data = JSON.parse(localStorage.getItem("Idle.dungeon"));
+        for (const name in data) {
+            this[name] = data[name];
+        }
         hero.update("all");
     }
 

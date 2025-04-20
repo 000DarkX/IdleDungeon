@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Idle Dungeon v0.0.8</title>
+    <title>Idle Dungeon v0.0.10</title>
     <link rel="stylesheet" href="./files/css/dropdown.css">
     <link rel="stylesheet" href="./files/css/dialog.css">
     <style>
@@ -189,7 +189,9 @@
                 </details>
             </div>
             <div>
-                <button onclick="javascript:resize()">Resize</button>
+                <button onclick="javascript:resize()">Resize</button> |
+                <button onclick="javascript:saveGame()">Save</button> | 
+                <button onclick="javascript:loadGame()">Load</button>
             </div>
         </div>
     </dialog>
@@ -226,6 +228,18 @@
         }
     </script>
     <script>
+        function saveGame() {
+            hero.save();
+            $maps.guildHall.saveState();
+            $maps.dungeon.saveState();
+        }
+
+        function loadGame() {
+            hero.load();
+            $maps.guildHall.loadState();
+            $maps.dungeon.loadState();
+        }
+
         function openSettings() {
             const dialog = document.getElementById("settings");
             const clone  = dialog.cloneNode(true);
@@ -274,7 +288,7 @@
             hero = new Hero();
             hero.newUnit();
 
-            $summons = [];
+            $summons = hero.summons;
 
             shop = new Shop();
 

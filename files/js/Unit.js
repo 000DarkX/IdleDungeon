@@ -22,6 +22,15 @@ class Unit {
         this.alive = true;
     }
 
+    sell(itemId)
+    {
+        const item = $items[itemId];
+        if (item == undefined) return;
+        const sellFor = item.cost * .1;
+        this.give(itemId, -1);
+        this.give("gold", sellFor);
+    }
+
     update() {
     }
 
@@ -360,6 +369,7 @@ class Hero extends Unit {
     constructor() {
         super();
         this.team = "good";
+        this.summons = [];
         
         addEventListener("Idle.give", e => {
             const detail = e.detail;
@@ -382,6 +392,38 @@ class Hero extends Unit {
             if (e.target == hero)
                 this.update("");
         });*/
+    }
+    
+    save() {
+        const data = {};
+        const keys = ["team", "_life", "offense", "defense", "accessory", "items", "gold", "potions", "summons"];
+        for (const key of keys) {
+            data[key] = this[key];
+        }
+        localStorage.setItem("Idle.Hero", JSON.stringify(data));
+    }
+
+    load() {
+        const data = JSON.parse(localStorage.getItem("Idle.Hero"));
+        for (const name in data) {
+            this[name] = data[name];
+        }
+        this.update("all");
+        this.redraw_equip("offense");
+        this.redraw_equip("defense");
+        this.redraw_equip("accessory");
+    }
+
+    redraw_equip(type) {
+        for (let i = 0; i < this[type].length; ++i) {
+            const itemId = this[type][i];
+            if (itemId == undefined) continue;
+            const canvas = document.getElementById(`${type}${i}`);
+            const ctx = canvas.getContext("2d");
+            const item = $items[itemId];
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            sprites.drawByID(ctx, item.graphicId, 0, 0, canvas.width, canvas.height);
+        }
     }
 
     update(type) {

@@ -146,11 +146,20 @@ $items = {
     permLife: new Item({
         graphicId: 2713,
         itemId: "permLife",
-        cost: 30,
+        cost: 25,
         life: 1,
         lifeLimit: 25,
         name: "Small Perm Life Potion",
         desc: "+1 perm life up to 25"
+    }),
+    permLifeII: new Item({
+        graphicId: 2713,
+        itemId: "permLifeII",
+        cost: 50,
+        life: 1,
+        lifeLimit: 30,
+        name: "Small Perm Life Potion II",
+        desc: "+1 perm life up to 30"
     }),
     amuletOfLife: new Accessory({
         graphicId: 2259,
@@ -207,7 +216,7 @@ $weapons = {
     }),
     hvstone: new BasicAttack({
         name: "Heavy Stone",
-        desc: `A stone. Deals 5 blunt damage. Delay 1`,
+        desc: `A heavy stone. Deals 5 blunt damage. Delay 1`,
         cost: 75,
         attacks: [{
             damage: 5,
@@ -218,7 +227,7 @@ $weapons = {
     }),
     hstone: new BasicAttack({
         name: "Headache Stone",
-        desc: `A stone. Deals 3 blunt damage. knockdown 1%.`,
+        desc: `A heacache stone. Deals 3 blunt damage. knockdown 1%.`,
         cost: 35,
         knockdown: 1,
         bonus: {
@@ -309,6 +318,18 @@ $armors = {
         ac: 2,
         defenseType: "armor",
         graphicId: 2403
+    }),
+    leather:
+    new BasicDefense({
+        name: "Leather Armor",
+        desc: `Leather Armor. 3% Chance to block for 1/2 damage and prevents 3 physical damage`,
+        cost: 250,
+        defense: 3,
+        protections: {
+        },
+        ac: 3,
+        defenseType: "armor",
+        graphicId: 2404
     }),
 }
 

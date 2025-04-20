@@ -7,7 +7,7 @@ class Item {
         this.type = "item";
     }
 
-    unequip(hero, map, id) 
+    unequip(from, map, id) 
     {
         const ele = document.getElementById(`${this.type}${id}`);
         if (ele && ele.tagName == "CANVAS")

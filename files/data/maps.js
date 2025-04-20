@@ -1,17 +1,31 @@
 
 class GuildHall extends GameMap {
     #level 
+    #name
 
     constructor() {
         super();
         this.tileId = 487;
         this.#level = 1;
-        this.name   = `Guild Hall (${this.#level})`;
+        this.#name   = `Guild Hall (${this.#level})`;
+    }
+
+    get name() {
+        return `Guild Hall (${this.#level})`;
     }
 
     set level(value) {
         this.#level = value;
-        this.name   = `Guild Hall (${this.#level})`;
+        this.#name   = `Guild Hall (${this.#level})`;
+    }
+
+    saveState() {
+        localStorage.setItem("Idle.guildHall", this.#level);
+    }
+
+    loadState() {
+        this.#level = localStorage.getItem("Idle.guildHall") || 1;
+        hero.update("all");
     }
 
     tick(t) {
@@ -22,7 +36,7 @@ class GuildHall extends GameMap {
         if (Chance.int(1, 1000) == 1) {
             hero.give("potion", 1);
         }
-        if (Chance.int(1, 10_000) == 1) {
+        if (Chance.int(1, 100_000) == 1) {
             hero.give(Chance.pick(Object.keys($specialItems)), 1);
         }
         ++this._ticks;
@@ -31,12 +45,13 @@ class GuildHall extends GameMap {
 
 class Dungeon extends GameMap {
     #level
+    #name
 
     constructor() {
         super();
         this.tileId = 587;
         this.#level = 0;
-        this.name   = `Dungeon (${this.#level})`;
+        this.#name   = `Dungeon (${this.#level})`;
         this.spawns = {};
 
         this.spawns[1] = [ "rat", "worm" ];
@@ -44,6 +59,7 @@ class Dungeon extends GameMap {
         this.spawns[3] = ["sheep", "wasp"];
         this.spawns[4] = ["ratII", "snake", "wasp", "rare1"];
         this.spawns[5] = ["frog", "ratII", "snake", "wasp"];
+        this.spawns[6] = ["frog", "pig"];
 
         this.levelDetail = {};
 
@@ -51,6 +67,19 @@ class Dungeon extends GameMap {
         this.unlocked  = 1;
         this.target    = undefined;
         this.advanceLevel();
+    }
+
+    get name() {
+        return `Dungeon (${this.#level})`;
+    }
+
+    saveState() {
+        localStorage.setItem("Idle.dungeon", this.#level);
+    }
+
+    loadState() {
+        this.#level = localStorage.getItem("Idle.dungeon") || 1;
+        hero.update("all");
     }
 
     postLoad(name, level) {
@@ -123,7 +152,7 @@ class Dungeon extends GameMap {
         if (this.#level > $settings.maxDungeonLevel) {
             this.#level = $settings.maxDungeonLevel;
         }
-        this.name   = `Dungeon (${this.#level})`;
+        this.#name   = `Dungeon (${this.#level})`;
         if (this.levelDetail[this.level] == undefined) {
             this.createLevel(this.level);
         }

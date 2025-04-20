@@ -80,7 +80,7 @@ $units = {
         name: "Worm",
         graphicId: 4108,
         life: [10, 10],
-        equipsOffense: ["rock"],
+        equipsOffense: ["wormBite"],
         equipsDefense: ["silk", "cloth"],
         equipsAccessory: [],
         drop: [
@@ -157,6 +157,20 @@ $units = {
         equipsAccessory: [],
         drop: [
             {itemId: "hstone", chance: 5, amount: 1},
+            {itemId: "gold", chance: 100, amount: 5},
+        ]
+    }),
+    pig: new BasicEnemyUnit({
+        name: "Pig",
+        graphicId: 4097,
+        types: [],
+        life: [55, 55],
+        equipsOffense: ["hstone", "hstone", "hstone"],
+        equipsDefense: ["leather", "leather", "leather", "silk"],
+        equipsAccessory: [],
+        drop: [
+            {itemId: "hstone", chance: 5, amount: 1},
+            {itemId: "leather", chance: 5, amount: 1},
             {itemId: "gold", chance: 100, amount: 5},
         ]
     }),
